@@ -1,23 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
 
+import Board from './models/board'
+
 function App() {
-  return (
+  const [board, setBoard] = useState<Board>(new Board());
+  
+    return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <div className="board">
+          {board.pieces.map((row, rowIndex) => (
+            <div key={rowIndex} className="row">
+              {row.map((cell, colIndex) => (
+                <div 
+                  key={`${rowIndex}${colIndex}`} 
+                  className="tile" 
+                  style={{backgroundColor: board.backgroundColours[rowIndex][colIndex]
+                }}>
+                  {cell && <img src={cell.image} alt={cell.name} className="piece" />}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </header>
     </div>
   );
