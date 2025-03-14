@@ -51,3 +51,5 @@ export const INITIAL_PIECES: Map<string, Piece> = new Map<string, Piece>([
 
 export const BOARD_GREEN: string = "#769656";
 export const BOARD_WHITE: string = "#ded4c0";
+export const BOARD_KILL: string = "#FF746C";
+export const BOARD_MOVE: string = "#FFA071";

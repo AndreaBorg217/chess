@@ -6,25 +6,34 @@ class Board{
 	backgroundColours: string[][];
 
 	constructor(){
-        this.pieces = [];
-        this.backgroundColours = [];
+        this.pieces = Array.from({ length: ROWS }, () => Array(COLUMNS).fill(undefined));
+        this.backgroundColours = Array.from({ length: ROWS }, () => Array(COLUMNS).fill(""));
         
-        for(let row = 0; row < ROWS; row ++){
-            this.pieces[row] = [];
-            this.backgroundColours[row] = [];
-            for(let col = 0; col < COLUMNS; col ++){
-                const stringCoordinate = `${row}${col}`;
-                this.pieces[row][col] = INITIAL_PIECES.get(stringCoordinate); 
-
-                this.backgroundColours[row][col] = (row + col) % 2 === 0 ? BOARD_GREEN : BOARD_WHITE;
-            }
-        }
+        this.setInitialPieces();
+        this.setBoardColours();
 	}
 	
     public printBoard(): void{
         this.pieces.forEach(row => {
         console.log(row.map(piece => piece ? `${piece.name.toUpperCase()}_${piece.colour.charAt(0)}` : "[]").join("\t"));
         });
+    }
+
+    public setBoardColours(): void{
+        for(let row = 0; row < ROWS; row ++){
+            for(let col = 0; col < COLUMNS; col ++){
+                this.backgroundColours[row][col] = (row + col) % 2 === 0 ? BOARD_GREEN : BOARD_WHITE;
+            }
+        }
+    }
+
+    public setInitialPieces(): void{
+        for(let row = 0; row < ROWS; row ++){
+            for(let col = 0; col < COLUMNS; col ++){
+                const stringCoordinate = `${row}${col}`;
+                this.pieces[row][col] = INITIAL_PIECES.get(stringCoordinate); 
+            }
+        }
     }
 }
 

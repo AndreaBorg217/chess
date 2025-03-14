@@ -1,19 +1,23 @@
-class Position{
-    col: number;
+class Position {
     row: number;
-    
-    constructor(col: number, row: number){
-        this.col = col;
+    col: number;
+
+    constructor(row: number, col: number) {
         this.row = row;
+        this.col = col;
     }
-    
+
     public equal(position: Position): boolean {
-        return this.col === position.col && this.row === position.row;
+        return this.row === position.row && this.col === position.col;
     }
-    
+
     public key(): string {
-        return `${this.col}${this.row}`;
+        return `${this.row}${this.col}`;
+    }
+
+    public toString(): string {
+        return `(${this.row}, ${this.col})`;
     }
 }
 
-export default Position
+export default Position;

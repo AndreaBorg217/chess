@@ -1,5 +1,6 @@
 import {Colour} from '../constants'
 import Position from './position'
+import Board from './board'
 
 abstract class Piece {
     name: string;
@@ -15,11 +16,16 @@ abstract class Piece {
     }
 
     // to handle Pawn diagonal moves
-    public killMoves(): Map<string, Position> {
-        return this.evaluateMoves();
+    public killMoves(board: Board): Map<string, Position> {
+        return this.evaluateMoves(board);
     }
     
-    abstract evaluateMoves(): Map<string, Position>;
+
+    public toString(): string {
+        return `${this.name}_${this.colour.charAt(0)}${this.position.toString()}`;
+    }
+    
+    abstract evaluateMoves(board: Board): Map<string, Position>;
 }
 
 export default Piece
