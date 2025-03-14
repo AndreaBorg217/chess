@@ -7,11 +7,14 @@ class GameController {
     board: Board;
     selectedPiece: Piece | undefined;
     currentTurn: Colour = Colour.WHITE;
+    deadPieces: Map<Colour, Piece[]> = new Map<Colour, Piece[]>();
     private updateUI?: () => void; 
 
     constructor() {
         this.board = new Board();
         this.selectedPiece = undefined;
+        this.deadPieces.set(Colour.WHITE, []);
+        this.deadPieces.set(Colour.BLACK, []);
     }
 
     public setUpdateCallback(callback: () => void) {
@@ -43,6 +46,12 @@ class GameController {
             this.board.pieces[clickedPosition.row][clickedPosition.col] = this.selectedPiece;
             this.board.pieces[this.selectedPiece.position.row][this.selectedPiece.position.col] = undefined;
             this.board.pieces[clickedPosition.row][clickedPosition.col]!.position = clickedPosition;
+            // check if piece was killed
+            if (clickedCell instanceof Piece && clickedCell.colour === this.getOpponentColour()) {
+                console.log("Killed", clickedCell.toString());
+                this.deadPieces.get(this.getOpponentColour())?.push(clickedCell);
+
+            }
             // clear selected pieces
             this.selectedPiece = undefined;
             console.log("Cleared selectedPiece");
