@@ -2,7 +2,7 @@ import Piece from "../piece";
 import Position from "../position";
 import {Colour} from '../../constants'
 import Board from "../board";
-import { Utils } from "../../utils";
+import Utils from '../../utils/utils';
 
 class Pawn extends Piece{
     constructor(colour: Colour, x: number, y: number){
