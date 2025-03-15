@@ -35,6 +35,9 @@ class GameController {
         clickedPosition: Position,
         clickedCell: Piece | undefined, 
     ) {
+        if(this.board.clickable[clickedPosition.row][clickedPosition.col] === false) {
+            return;
+        }
         if (clickedCell === undefined && this.selectedPiece === undefined) {
             console.log("Clicked on an empty cell", clickedPosition ,"No piece selected.");
             return;
@@ -148,6 +151,7 @@ class GameController {
         // if king current position is not in check && all king moves are in opponent moves -> stalemate
         if (!this.kingInCheck.get(checkKingColour) && ((kingPossibleMovesKeys.length > 0 && allKingMovesInOpponentMoves) || (kingPossibleMovesKeys.length === 0 && kingCurrentPositionInOpponentMoves))) {
             console.log("Game is in STALEMATE");
+            this.board.disableBoard();
             return GameState.STALEMATE;
         }
         // if king already in check && all king moves are in opponent moves -> checkmate
@@ -158,6 +162,7 @@ class GameController {
                 this.board.backgroundColours[position.row][position.col] = BOARD_KILL;
             }
             console.log(`${checkKingColour} king is in CHECKMATE`);
+            this.board.disableBoard();
             return GameState.CHECKMATE
         }
         // if king current position is in opponent moves -> check

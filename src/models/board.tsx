@@ -4,10 +4,12 @@ import {ROWS, COLUMNS, INITIAL_PIECES, BOARD_GREEN, BOARD_WHITE} from "../consta
 class Board{
 	pieces: (Piece | undefined)[][];
 	backgroundColours: string[][];
+    clickable: boolean [][];
 
 	constructor(){
         this.pieces = Array.from({ length: ROWS }, () => Array(COLUMNS).fill(undefined));
         this.backgroundColours = Array.from({ length: ROWS }, () => Array(COLUMNS).fill(""));
+        this.clickable = Array.from({ length: ROWS }, () => Array(COLUMNS).fill(true));
         
         this.setInitialPieces();
         this.setBoardColours();
@@ -34,6 +36,10 @@ class Board{
                 this.pieces[row][col] = INITIAL_PIECES.get(stringCoordinate); 
             }
         }
+    }
+
+    public disableBoard(): void{
+        this.clickable = Array.from({ length: ROWS }, () => Array(COLUMNS).fill(false));
     }
 }
 
