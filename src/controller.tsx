@@ -46,7 +46,7 @@ class GameController {
                 return
             }
             // move piece
-            console.log("Moved", this.selectedPiece.name,"from", this.selectedPiece.position, "to", clickedPosition);
+            console.log("Moved", this.selectedPiece.name,"from", this.selectedPiece.position.toString(), "to", clickedPosition.toString());
             this.board.pieces[clickedPosition.row][clickedPosition.col] = this.selectedPiece;
             this.board.pieces[this.selectedPiece.position.row][this.selectedPiece.position.col] = undefined;
             this.board.pieces[clickedPosition.row][clickedPosition.col]!.position = clickedPosition;
