@@ -129,6 +129,18 @@ class GameController {
 
         // get king's possible moves
         const kingPossibleMoves: Map<string, Position> = king!.evaluateMoves(this.board, false);
+
+        // get kill moves for king's colour
+        let kingPiecesCanKill: Map<string, Position> = new Map<string, Position>();
+        for(let row = 0; row < ROWS; row++) {
+            for(let col = 0; col < COLUMNS; col++) {
+                if(this.board.pieces[row][col] instanceof Piece && this.board.pieces[row][col]?.colour === checkKingColour) {
+                const piece: Piece = this.board.pieces[row][col]!;
+                const moves: Map<string, Position> = piece.getkillMoves(this.board, false);
+                kingPiecesCanKill = new Map([...kingPiecesCanKill, ...moves]);
+                }
+            }
+        }
         
         // get possible moves for all opponent pieces
         let opponentPossibleMoves: Map<string, Position> = new Map<string, Position>();
@@ -140,6 +152,11 @@ class GameController {
                     opponentPossibleMoves = new Map([...opponentPossibleMoves, ...moves]);
                 }
             }
+        }
+
+        // filter out opponent moves that king's pieces can kill
+        for (let key of kingPiecesCanKill.keys()) {
+            opponentPossibleMoves.delete(key);
         }
         
         let kingPossibleMovesKeys: string[] = Array.from(kingPossibleMoves.keys());
