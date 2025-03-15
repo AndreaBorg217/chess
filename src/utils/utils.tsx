@@ -12,15 +12,6 @@ class Utils{
     public static isWithinBounds(p: Position): boolean {
         return p.row >= 0 && p.row < ROWS && p.col >= 0 && p.col < COLUMNS;
     }
-
-    public static getSwappablePieces(pawnToSwap: Pawn): Piece[]{
-        return [
-            new Queen(pawnToSwap.colour, pawnToSwap.position.row, pawnToSwap.position.col),
-            new Rook(pawnToSwap.colour, pawnToSwap.position.row, pawnToSwap.position.col),
-            new Bishop(pawnToSwap.colour, pawnToSwap.position.row, pawnToSwap.position.col),
-            new Knight(pawnToSwap.colour, pawnToSwap.position.row, pawnToSwap.position.col),
-        ];
-    }
 }
 
 export default Utils;
