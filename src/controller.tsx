@@ -11,6 +11,7 @@ class GameController {
     currentTurn: Colour = Colour.WHITE;
     deadPieces: Map<Colour, Piece[]> = new Map<Colour, Piece[]>();
     kingInCheck: Map<Colour, boolean> = new Map<Colour, boolean>();
+    gameStates: Map<Colour, GameState> = new Map<Colour, GameState>();
     swappablePawn: Pawn | undefined;
     private updateUI?: () => void; 
 
@@ -21,6 +22,8 @@ class GameController {
         this.deadPieces.set(Colour.BLACK, []);
         this.kingInCheck.set(Colour.WHITE, false);
         this.kingInCheck.set(Colour.BLACK, false);
+        this.gameStates.set(Colour.WHITE, GameState.PLAY);
+        this.gameStates.set(Colour.BLACK, GameState.PLAY);
         this.swappablePawn = undefined;
     }
 
@@ -65,16 +68,11 @@ class GameController {
             if (clickedCell instanceof Piece && clickedCell.colour === this.getOpponentColour()) {
                 console.log("Killed", clickedCell.toString());
                 this.deadPieces.get(this.getOpponentColour())?.push(clickedCell);
-
             }
 
             // switch turn
             this.switchTurn();
             
-            // check game state
-            let states: Map<Colour, GameState> = new Map<Colour, GameState>();
-            states.set(Colour.WHITE, this.getGameState(Colour.WHITE));
-            states.set(Colour.BLACK, this.getGameState(Colour.BLACK));
             // check if piece was killed
             if (clickedCell instanceof Piece && clickedCell.colour === this.getOpponentColour()) {
                 console.log("Killed", clickedCell.toString());
@@ -110,7 +108,7 @@ class GameController {
     }
 
     private getGameState(checkKingColour: Colour): GameState{
-        // find opponents's king
+        // find king
         let king: Piece | undefined = undefined;
         for(let row = 0; row < ROWS; row++) {
             for(let col = 0; col < COLUMNS; col++) {
@@ -119,6 +117,11 @@ class GameController {
                     break;
                 }
             } 
+        }
+
+        if (king === undefined) {
+            console.log(`${checkKingColour} king is in CHECKMATE`);
+            return GameState.CHECKMATE;
         }
 
         // get king's possible moves
@@ -139,26 +142,27 @@ class GameController {
         let kingPossibleMovesKeys: string[] = Array.from(kingPossibleMoves.keys());
         let opponentPossibleMovesKeys: string[] = Array.from(opponentPossibleMoves.keys());
 
-        if (kingPossibleMovesKeys.length === 0) {
-            return GameState.PLAY;
-        }
-
-        const allKingMovesInOpponentMoves = kingPossibleMovesKeys.every(move => opponentPossibleMovesKeys.includes(move));
+        const kingCurrentPositionKey: Position = king!.position;  
+        const kingCurrentPositionInOpponentMoves: boolean = opponentPossibleMovesKeys.includes(kingCurrentPositionKey.key());
+        const allKingMovesInOpponentMoves: boolean = kingPossibleMovesKeys.every(move => opponentPossibleMovesKeys.includes(move));
         // if king current position is not in check && all king moves are in opponent moves -> stalemate
-        if (!this.kingInCheck.get(checkKingColour) && allKingMovesInOpponentMoves) {
+        if (!this.kingInCheck.get(checkKingColour) && ((kingPossibleMovesKeys.length > 0 && allKingMovesInOpponentMoves) || (kingPossibleMovesKeys.length === 0 && kingCurrentPositionInOpponentMoves))) {
             console.log("Game is in STALEMATE");
             return GameState.STALEMATE;
         }
         // if king already in check && all king moves are in opponent moves -> checkmate
         if (this.kingInCheck.get(checkKingColour) && allKingMovesInOpponentMoves) {
-            // mark intersection of king moves and opponent moves in red
-            // mark rest of opponent moves in orange
+            // mark opponent moves in red
+            for (let key of opponentPossibleMovesKeys) {
+                const position: Position = opponentPossibleMoves.get(key)!;
+                this.board.backgroundColours[position.row][position.col] = BOARD_KILL;
+            }
             console.log(`${checkKingColour} king is in CHECKMATE`);
             return GameState.CHECKMATE
         }
-        // if some king moves are in opponent moves -> check
-        let kingOpponentMovesIntersection: string[] = kingPossibleMovesKeys.filter(move => opponentPossibleMovesKeys.includes(move));
-        if(kingOpponentMovesIntersection.length > 0) {
+        // if king current position is in opponent moves -> check
+        // let kingOpponentMovesIntersection: string[] = kingPossibleMovesKeys.filter(move => opponentPossibleMovesKeys.includes(move));
+        if(kingCurrentPositionInOpponentMoves) {
             console.log(`${checkKingColour} king is in CHECK`);
             this.kingInCheck.set(checkKingColour, true);
             return GameState.CHECK;
@@ -185,12 +189,16 @@ class GameController {
     }
 
     private switchTurn() {
+        // check game state
+        this.gameStates.set(Colour.WHITE, this.getGameState(Colour.WHITE));
+        this.gameStates.set(Colour.BLACK, this.getGameState(Colour.BLACK));
+        // switch turn
         this.currentTurn = this.getOpponentColour();
         console.log("Switched turn to", this.currentTurn);
         this.swappablePawn = undefined;
         this.selectedPiece = undefined;
         console.log("Cleared selected piece");
-        this.board.setBoardColours();
+        this.board.setBoardColours(); // reset board colours
     }
 
 }

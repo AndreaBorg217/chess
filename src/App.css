@@ -34,6 +34,7 @@
   flex-direction: column;
   padding-left: 8vw;
   color: white;
+  gap: 2vh;
 }
 
 #turn-container {
@@ -42,13 +43,69 @@
   justify-content: center;
   gap: 1vw;
   padding: 1vw;
-  background-color: #ffffff1a;
+  background-color: rgba(255, 255, 255, 0.1);
   border-radius: 1vw;
 }
 
 #turn-piece, .dead-piece, .swappable-piece {
   width: 3.5vw;
   height: 3.5vw;
+}
+
+#state-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1vw;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 1vw;
+}
+
+.colour-state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1vw;
+}
+
+.colour-state-container img {
+  width: 3vw;
+  height: 3vw;
+}
+
+.colour-check-container, 
+.colour-checkmate-container,
+#stale-mate-container {
+  width: 6vw;
+  height: 6vw;
+  border: 1px solid white;
+  border-radius: 0.8vw;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.7vw;
+  font-weight: bold;
+  text-transform: uppercase;
+  position: relative;
+}
+
+.colour-check-container::before {
+  content: "CHECK";
+  position: absolute;
+}
+
+.colour-checkmate-container::before {
+  content: "CHECKMATE";
+  position: absolute;
+}
+
+#stale-mate-container::before {
+  content: "STALEMATE";
+  position: absolute;
+}
+
+#stale-mate-container {
+  margin: 0 2vw;
 }
 
 #dead-container {
@@ -82,7 +139,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #000000b3;
+  background-color: rgba(0, 0, 0, 0.7);
   z-index: 1000;
 }
 

@@ -6,6 +6,7 @@ import Position from './models/position'
 import GameController from './controller'
 import { Colour } from './constants'
 import Utils from './utils/utils'
+import {GameState} from './constants'
 
 function App() {
   const [controller] = useState<GameController>(new GameController());
@@ -36,25 +37,60 @@ function App() {
 
       <div id="stats-container">
         <div id="turn-container">
-        <h1>Turn:</h1>
+        {/* <h1>Turn:</h1> */}
         <img src={`/assets/images/pieces/${controller.currentTurn}/king.png`} id="turn-piece"/>
         </div>
+
+        <div id="state-container">
+          <div className='colour-state-container'>
+            <img src="/assets/images/pieces/white/king.png"/>
+            <div 
+              className='colour-check-container' 
+              style={{ backgroundColor: controller.gameStates.get(Colour.WHITE) === GameState.CHECK ? 'green' : 'transparent' }}
+            ></div>
+            <div 
+              className='colour-checkmate-container'
+              style={{ backgroundColor: controller.gameStates.get(Colour.WHITE) === GameState.CHECKMATE ? 'green' : 'transparent' }}
+            ></div>
+          </div>
+            <div 
+            id='stale-mate-container'
+            style={{ 
+              backgroundColor: 
+              [Colour.WHITE, Colour.BLACK].some(colour => controller.gameStates.get(colour) === GameState.STALEMATE) 
+              ? 'green' 
+              : 'transparent' 
+            }}
+            ></div>
+          <div className='colour-state-container'>
+          <img src="/assets/images/pieces/black/king.png"/>
+            <div 
+              className='colour-check-container'
+              style={{ backgroundColor: controller.gameStates.get(Colour.BLACK) === GameState.CHECK ? 'green' : 'transparent'}}
+            ></div>
+            <div 
+              className='colour-checkmate-container'
+              style={{ backgroundColor: controller.gameStates.get(Colour.BLACK) === GameState.CHECKMATE ? 'green' : 'transparent'}}
+            ></div>
+          </div>
+        </div>
+
         <div id="dead-container">
-        <div className="dead-pieces">
-          <div className='colour-dead-pieces'>
-          {controller.deadPieces.get(Colour.WHITE)?.map((piece: Piece) => (
-            <img key={piece.toString()} src={piece.image} alt={piece.name} className="dead-piece"/>
-          ))}
-          <br/>
+          <div className="dead-pieces">
+            <div className='colour-dead-pieces'>
+            {controller.deadPieces.get(Colour.WHITE)?.map((piece: Piece) => (
+              <img key={piece.toString()} src={piece.image} alt={piece.name} className="dead-piece"/>
+            ))}
+            <br/>
+            </div>
+            <div className='colour-dead-pieces'>
+            {controller.deadPieces.get(Colour.BLACK)?.map((piece: Piece) => (
+              <img key={piece.toString()} src={piece.image} alt={piece.name} className="dead-piece"/>
+            ))}
+            </div>
           </div>
-          <div className='colour-dead-pieces'>
-          {controller.deadPieces.get(Colour.BLACK)?.map((piece: Piece) => (
-            <img key={piece.toString()} src={piece.image} alt={piece.name} className="dead-piece"/>
-          ))}
-          </div>
-          
         </div>
-        </div>
+      <div/>
       </div>
 
       {controller.swappablePawn !== undefined && (
