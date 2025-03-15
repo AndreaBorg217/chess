@@ -1,8 +1,9 @@
 import Piece from './models/piece';
 import Position  from './models/position';
 import Board from './models/board';
-import { Colour, BOARD_MOVE, BOARD_KILL, GameState, ROWS, COLUMNS } from './constants';
+import { Colour, BOARD_MOVE, BOARD_KILL, GameState, ROWS, COLUMNS, LAST_ROW_MAP } from './constants';
 import King from './models/pieces/king';
+import Pawn from './models/pieces/pawn';
 
 class GameController {
     board: Board;
@@ -10,6 +11,7 @@ class GameController {
     currentTurn: Colour = Colour.WHITE;
     deadPieces: Map<Colour, Piece[]> = new Map<Colour, Piece[]>();
     kingInCheck: Map<Colour, boolean> = new Map<Colour, boolean>();
+    swappablePawn: Pawn | undefined;
     private updateUI?: () => void; 
 
     constructor() {
@@ -19,6 +21,7 @@ class GameController {
         this.deadPieces.set(Colour.BLACK, []);
         this.kingInCheck.set(Colour.WHITE, false);
         this.kingInCheck.set(Colour.BLACK, false);
+        this.swappablePawn = undefined;
     }
 
     public setUpdateCallback(callback: () => void) {
@@ -50,6 +53,24 @@ class GameController {
             this.board.pieces[clickedPosition.row][clickedPosition.col] = this.selectedPiece;
             this.board.pieces[this.selectedPiece.position.row][this.selectedPiece.position.col] = undefined;
             this.board.pieces[clickedPosition.row][clickedPosition.col]!.position = clickedPosition;
+            
+            // check if pawn reached last row
+            this.getSwappablePawn();
+            if (this.swappablePawn) {
+                this.updateUI?.(); // to show the piece swap dialog
+                return;
+            }
+
+            // check if piece was killed
+            if (clickedCell instanceof Piece && clickedCell.colour === this.getOpponentColour()) {
+                console.log("Killed", clickedCell.toString());
+                this.deadPieces.get(this.getOpponentColour())?.push(clickedCell);
+
+            }
+
+            // switch turn
+            this.switchTurn();
+            
             // check game state
             let states: Map<Colour, GameState> = new Map<Colour, GameState>();
             states.set(Colour.WHITE, this.getGameState(Colour.WHITE));
@@ -60,14 +81,6 @@ class GameController {
                 this.deadPieces.get(this.getOpponentColour())?.push(clickedCell);
 
             }
-            // clear selected pieces
-            this.selectedPiece = undefined;
-            console.log("Cleared selectedPiece");
-            // reset background colours
-            this.board.setBoardColours();
-            // switch turn
-            this.currentTurn = this.getOpponentColour();
-            console.log("Switched turn to", this.currentTurn);
         } else if (clickedCell instanceof Piece && clickedCell.colour === this.currentTurn) {
             if (this.selectedPiece) {
                 this.board.setBoardColours();
@@ -96,7 +109,7 @@ class GameController {
         return this.currentTurn === Colour.WHITE ? Colour.BLACK : Colour.WHITE;
     }
 
-    public getGameState(checkKingColour: Colour): GameState{
+    private getGameState(checkKingColour: Colour): GameState{
         // find opponents's king
         let king: Piece | undefined = undefined;
         for(let row = 0; row < ROWS; row++) {
@@ -152,6 +165,32 @@ class GameController {
         }
         this.kingInCheck.set(checkKingColour, false);
         return GameState.PLAY;
+    }
+
+    private getSwappablePawn(): void {
+        const lastRowIndex = LAST_ROW_MAP.get(this.currentTurn);
+
+        for (let col = 0; col < COLUMNS; col++) {
+            if (this.board.pieces[lastRowIndex!][col] instanceof Pawn && this.board.pieces[lastRowIndex!][col]?.colour === this.currentTurn) {
+                console.log("Found swappable pawn", this.board.pieces[lastRowIndex!][col]?.toString());
+                this.swappablePawn = this.board.pieces[lastRowIndex!][col] as Pawn;
+            }
+        }
+    }
+
+    public handlePawnSwap(selectedPiece: Piece) {
+        this.board.pieces[this.swappablePawn!.position.row][this.swappablePawn!.position.col] = selectedPiece;
+        this.switchTurn();
+        this.updateUI?.();
+    }
+
+    private switchTurn() {
+        this.currentTurn = this.getOpponentColour();
+        console.log("Switched turn to", this.currentTurn);
+        this.swappablePawn = undefined;
+        this.selectedPiece = undefined;
+        console.log("Cleared selected piece");
+        this.board.setBoardColours();
     }
 
 }

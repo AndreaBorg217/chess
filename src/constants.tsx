@@ -60,3 +60,8 @@ export const BOARD_GREEN: string = "#769656";
 export const BOARD_WHITE: string = "#ded4c0";
 export const BOARD_KILL: string = "#FF746C";
 export const BOARD_MOVE: string = "#FFA071";
+
+export const LAST_ROW_MAP: Map<Colour, number> = new Map<Colour, number>([
+    [Colour.WHITE, 0],
+    [Colour.BLACK, 7],
+]);
