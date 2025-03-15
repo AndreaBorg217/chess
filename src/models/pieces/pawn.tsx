@@ -9,7 +9,7 @@ class Pawn extends Piece{
         super("pawn", colour, x, y);            
     }
     
-    public killMoves(board: Board): Map<string, Position>{
+    public getkillMoves(board: Board): Map<string, Position>{
         const leftDiagonal: Position = new Position(this.position.row + this.getCardinality(), this.position.col - 1);
         const rightDiagonal: Position = new Position(this.position.row + this.getCardinality(), this.position.col + 1);
 
@@ -24,11 +24,11 @@ class Pawn extends Piece{
         return killMoves;
     }
     
-    public evaluateMoves(board: Board): Map<string, Position>{
+    public evaluateMoves(board: Board, log: boolean = true): Map<string, Position>{
         const FIRST_MOVE: number = 2;
         const OTHER_MOVES: number = 1;
 
-        const killMoves: Map<string, Position> = this.killMoves(board);
+        const killMoves: Map<string, Position> = this.getkillMoves(board);
         
         let forwardMoves: Map<string, Position> = new Map<string, Position>();
                 
@@ -53,7 +53,9 @@ class Pawn extends Piece{
         forwardMoves = new Map<string, Position>(Array.from(forwardMoves).filter(([key, position]) => board.pieces[position.row][position.col] === undefined));
         
         let toReturn: Map<string, Position> = new Map<string, Position>([...killMoves, ...forwardMoves]);
-        console.log("Pawn can move to: ", Array.from(toReturn.values()).map(p => p.toString()).join(", "));
+        if(log){
+            console.log("Pawn can move to: ", Array.from(toReturn.values()).map(p => p.toString()).join(", "));
+        }
         return toReturn 
     }
 

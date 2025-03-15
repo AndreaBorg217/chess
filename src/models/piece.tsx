@@ -16,8 +16,8 @@ abstract class Piece {
     }
 
     // to handle Pawn diagonal moves
-    public killMoves(board: Board): Map<string, Position> {
-        return this.evaluateMoves(board);
+    public getkillMoves(board: Board, log: boolean): Map<string, Position> {
+        return this.evaluateMoves(board, log);
     }
     
 
@@ -25,7 +25,7 @@ abstract class Piece {
         return `${this.name}_${this.colour.charAt(0)}${this.position.toString()}`;
     }
     
-    abstract evaluateMoves(board: Board): Map<string, Position>;
+    abstract evaluateMoves(board: Board, log: boolean): Map<string, Position>;
 }
 
 export default Piece

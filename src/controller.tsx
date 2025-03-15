@@ -1,13 +1,15 @@
 import Piece from './models/piece';
 import Position  from './models/position';
 import Board from './models/board';
-import { Colour, BOARD_MOVE, BOARD_KILL } from './constants';
+import { Colour, BOARD_MOVE, BOARD_KILL, GameState, ROWS, COLUMNS } from './constants';
+import King from './models/pieces/king';
 
 class GameController {
     board: Board;
     selectedPiece: Piece | undefined;
     currentTurn: Colour = Colour.WHITE;
     deadPieces: Map<Colour, Piece[]> = new Map<Colour, Piece[]>();
+    kingInCheck: Map<Colour, boolean> = new Map<Colour, boolean>();
     private updateUI?: () => void; 
 
     constructor() {
@@ -15,6 +17,8 @@ class GameController {
         this.selectedPiece = undefined;
         this.deadPieces.set(Colour.WHITE, []);
         this.deadPieces.set(Colour.BLACK, []);
+        this.kingInCheck.set(Colour.WHITE, false);
+        this.kingInCheck.set(Colour.BLACK, false);
     }
 
     public setUpdateCallback(callback: () => void) {
@@ -30,7 +34,7 @@ class GameController {
             return;
         } else if ((clickedCell === undefined || (clickedCell instanceof Piece && clickedCell.colour === this.getOpponentColour())) && this.selectedPiece instanceof Piece) {
             // check if clicked cell is a possible move
-            const possibleMoves: Map<string, Position> = this.selectedPiece.evaluateMoves(this.board);
+            const possibleMoves: Map<string, Position> = this.selectedPiece.evaluateMoves(this.board, false);
             let isPossibleMove = false;
             for (let [key, position] of possibleMoves) {
                 if (position.key() === clickedPosition.key()) {
@@ -46,6 +50,10 @@ class GameController {
             this.board.pieces[clickedPosition.row][clickedPosition.col] = this.selectedPiece;
             this.board.pieces[this.selectedPiece.position.row][this.selectedPiece.position.col] = undefined;
             this.board.pieces[clickedPosition.row][clickedPosition.col]!.position = clickedPosition;
+            // check game state
+            let states: Map<Colour, GameState> = new Map<Colour, GameState>();
+            states.set(Colour.WHITE, this.getGameState(Colour.WHITE));
+            states.set(Colour.BLACK, this.getGameState(Colour.BLACK));
             // check if piece was killed
             if (clickedCell instanceof Piece && clickedCell.colour === this.getOpponentColour()) {
                 console.log("Killed", clickedCell.toString());
@@ -68,7 +76,7 @@ class GameController {
             console.log("Selected piece: ", clickedCell.toString());
             this.selectedPiece = clickedCell;
             // get possible moves
-            const possibleMoves: Map<string, Position> = clickedCell.evaluateMoves(this.board);
+            const possibleMoves: Map<string, Position> = clickedCell.evaluateMoves(this.board, true);
             // mark cells with possible moves for selected piece
             for (let [key, position] of possibleMoves) {
                 if (this.board.pieces[position.row][position.col] === undefined) {
@@ -88,6 +96,63 @@ class GameController {
         return this.currentTurn === Colour.WHITE ? Colour.BLACK : Colour.WHITE;
     }
 
+    public getGameState(checkKingColour: Colour): GameState{
+        // find opponents's king
+        let king: Piece | undefined = undefined;
+        for(let row = 0; row < ROWS; row++) {
+            for(let col = 0; col < COLUMNS; col++) {
+                if(this.board.pieces[row][col] instanceof King && this.board.pieces[row][col]?.colour === checkKingColour) {
+                    king = this.board.pieces[row][col];
+                    break;
+                }
+            } 
+        }
+
+        // get king's possible moves
+        const kingPossibleMoves: Map<string, Position> = king!.evaluateMoves(this.board, false);
+        
+        // get possible moves for all opponent pieces
+        let opponentPossibleMoves: Map<string, Position> = new Map<string, Position>();
+        for(let row = 0; row < ROWS; row++) {
+            for(let col = 0; col < COLUMNS; col++) {
+                if(this.board.pieces[row][col] instanceof Piece && this.board.pieces[row][col]?.colour !== checkKingColour) {
+                    const piece: Piece = this.board.pieces[row][col]!;
+                    const moves: Map<string, Position> = piece.getkillMoves(this.board, false);
+                    opponentPossibleMoves = new Map([...opponentPossibleMoves, ...moves]);
+                }
+            }
+        }
+        
+        let kingPossibleMovesKeys: string[] = Array.from(kingPossibleMoves.keys());
+        let opponentPossibleMovesKeys: string[] = Array.from(opponentPossibleMoves.keys());
+
+        if (kingPossibleMovesKeys.length === 0) {
+            return GameState.PLAY;
+        }
+
+        const allKingMovesInOpponentMoves = kingPossibleMovesKeys.every(move => opponentPossibleMovesKeys.includes(move));
+        // if king current position is not in check && all king moves are in opponent moves -> stalemate
+        if (!this.kingInCheck.get(checkKingColour) && allKingMovesInOpponentMoves) {
+            console.log("Game is in STALEMATE");
+            return GameState.STALEMATE;
+        }
+        // if king already in check && all king moves are in opponent moves -> checkmate
+        if (this.kingInCheck.get(checkKingColour) && allKingMovesInOpponentMoves) {
+            // mark intersection of king moves and opponent moves in red
+            // mark rest of opponent moves in orange
+            console.log(`${checkKingColour} king is in CHECKMATE`);
+            return GameState.CHECKMATE
+        }
+        // if some king moves are in opponent moves -> check
+        let kingOpponentMovesIntersection: string[] = kingPossibleMovesKeys.filter(move => opponentPossibleMovesKeys.includes(move));
+        if(kingOpponentMovesIntersection.length > 0) {
+            console.log(`${checkKingColour} king is in CHECK`);
+            this.kingInCheck.set(checkKingColour, true);
+            return GameState.CHECK;
+        }
+        this.kingInCheck.set(checkKingColour, false);
+        return GameState.PLAY;
+    }
 
 }
 export default GameController;

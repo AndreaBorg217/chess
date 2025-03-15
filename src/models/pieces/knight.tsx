@@ -9,7 +9,7 @@ class Knight extends Piece{
         super("knight", colour, x, y);            
     }
     
-    public evaluateMoves(board: Board): Map<string, Position>{
+    public evaluateMoves(board: Board, log: boolean = true): Map<string, Position>{
         let moves: Map<string, Position> = new Map<string, Position>();
         // up 2, left 1
         let p = new Position(this.position.row + 2, this.position.col - 1);
@@ -51,7 +51,9 @@ class Knight extends Piece{
         if(Utils.isWithinBounds(p) && (board.pieces[p.row][p.col]?.colour !== this.colour)){
             moves.set(p.key(), p);
         }
-        console.log("Knight can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));
+        if(log){
+            console.log("Knight can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));
+        }
         return moves;
     }
 }

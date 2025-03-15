@@ -11,6 +11,13 @@ export enum Colour {
     WHITE = "white",
 };
 
+export enum GameState{
+    CHECK = "check",
+    CHECKMATE = "checkmate",
+    STALEMATE = "stalemate",
+    PLAY = "play",
+}
+
 export const ROWS: number = 8;
 export const COLUMNS: number = 8;
 

@@ -9,9 +9,11 @@ class Rook extends Piece{
         super("rook", colour, x, y);            
     }
     
-    public evaluateMoves(board: Board): Map<string, Position>{
+    public evaluateMoves(board: Board, log: boolean = true): Map<string, Position>{
         const moves = MovementUtils.slidePlus(this, board);
-        console.log("Rook can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));
+        if(log){
+            console.log("Rook can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));
+        }
         return moves;
     }
 }

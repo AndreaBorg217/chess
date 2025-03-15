@@ -9,7 +9,7 @@ class King extends Piece{
         super("king", colour, x, y);            
     }
     
-    public evaluateMoves(board: Board): Map<string, Position>{
+    public evaluateMoves(board: Board, log: boolean = true): Map<string, Position>{
         let moves: Map<string, Position> = new Map<string, Position>();
         // increase row, decrease column (up left)
         let p = new Position(this.position.row + 1, this.position.col - 1);
@@ -52,7 +52,9 @@ class King extends Piece{
             moves.set(p.key(), p);
         }
 
-        console.log("King can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));
+        if(log){
+            console.log("King can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));
+        }
         return moves;
     }
 }

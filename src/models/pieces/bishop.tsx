@@ -9,9 +9,11 @@ class Bishop extends Piece{
         super("bishop", colour, x, y);            
     }
     
-    public evaluateMoves(board: Board): Map<string, Position>{
+    public evaluateMoves(board: Board, log: boolean = true): Map<string, Position>{
         const moves = MovementUtils.slideX(this, board);
-        console.log("Knight can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));
+        if (log){
+            console.log("Bishop can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));
+        }
         return moves;
     }
 }

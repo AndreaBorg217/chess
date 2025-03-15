@@ -9,9 +9,11 @@ class Queen extends Piece{
         super("queen", colour, x, y);            
     }
     
-    public evaluateMoves(board: Board): Map<string, Position>{
+    public evaluateMoves(board: Board, log: boolean= true): Map<string, Position>{
         const moves = new Map<string,Position>([...MovementUtils.slideX(this, board), ...MovementUtils.slidePlus(this, board)]);
-        console.log("Queen can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));
+        if(log){
+            console.log("Queen can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));
+        }
         return moves;
     }
 }
