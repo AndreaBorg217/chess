@@ -11,45 +11,27 @@ class King extends Piece{
     
     public evaluateMoves(board: Board, log: boolean = true): Map<string, Position>{
         let moves: Map<string, Position> = new Map<string, Position>();
-        // increase row, decrease column (up left)
-        let p = new Position(this.position.row + 1, this.position.col - 1);
-        if(Utils.isWithinBounds(p) &&(board.pieces[p.row][p.col] === undefined || board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // increase row, increase column (up right)
-        p = new Position(this.position.row + 1, this.position.col + 1);
-        if(Utils.isWithinBounds(p) &&(board.pieces[p.row][p.col] === undefined || board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // decrease row, decrease column (down left)
-        p = new Position(this.position.row - 1, this.position.col - 1);
-        if(Utils.isWithinBounds(p) &&(board.pieces[p.row][p.col] === undefined || board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // decrease row, increase column (down right)
-        p = new Position(this.position.row - 1, this.position.col + 1);
-        if(Utils.isWithinBounds(p) &&(board.pieces[p.row][p.col] === undefined || board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // left
-        p = new Position(this.position.row, this.position.col - 1);
-        if(Utils.isWithinBounds(p) &&(board.pieces[p.row][p.col] === undefined || board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // right
-        p = new Position(this.position.row, this.position.col + 1);
-        if(Utils.isWithinBounds(p) &&(board.pieces[p.row][p.col] === undefined || board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // up
-        p = new Position(this.position.row -1, this.position.col);
-        if(Utils.isWithinBounds(p) &&(board.pieces[p.row][p.col] === undefined || board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // down
-        p = new Position(this.position.row + 1, this.position.col);
-        if(Utils.isWithinBounds(p) &&(board.pieces[p.row][p.col] === undefined || board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
+        let p = new Position(this.position.row + 1, this.position.col - 1); // increase row, decrease column (up left)
+        moves.set(p.key(), p);
+        p = new Position(this.position.row + 1, this.position.col + 1); // increase row, increase column (up right)
+        moves.set(p.key(), p);
+        p = new Position(this.position.row - 1, this.position.col - 1); // decrease row, decrease column (down left)
+        moves.set(p.key(), p);
+        p = new Position(this.position.row - 1, this.position.col + 1); // decrease row, increase column (down right)
+        moves.set(p.key(), p);
+        p = new Position(this.position.row, this.position.col - 1); // left
+        moves.set(p.key(), p);
+        p = new Position(this.position.row, this.position.col + 1); // right
+        moves.set(p.key(), p);
+        p = new Position(this.position.row -1, this.position.col); // up
+        moves.set(p.key(), p);
+        p = new Position(this.position.row + 1, this.position.col); // down
+        moves.set(p.key(), p);
+
+        for(let [key, p] of moves){
+            if(!Utils.isLegalMove(this, p, board)){
+                moves.delete(key);
+            }
         }
 
         if(log){

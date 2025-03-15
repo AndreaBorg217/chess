@@ -10,15 +10,16 @@ class Pawn extends Piece{
     }
     
     public getkillMoves(board: Board): Map<string, Position>{
-        const leftDiagonal: Position = new Position(this.position.row + this.getCardinality(), this.position.col - 1);
-        const rightDiagonal: Position = new Position(this.position.row + this.getCardinality(), this.position.col + 1);
-
         let killMoves: Map<string, Position> = new Map<string, Position>();
-        if(Utils.isWithinBounds(leftDiagonal) && board.pieces[leftDiagonal.row][leftDiagonal.col] instanceof Piece && board.pieces[leftDiagonal.row][leftDiagonal.col]?.colour !== this.colour){
-            killMoves.set(leftDiagonal.key(), leftDiagonal);
-        }
-        if(Utils.isWithinBounds(rightDiagonal) && board.pieces[rightDiagonal.row][rightDiagonal.col] instanceof Piece && board.pieces[rightDiagonal.row][rightDiagonal.col]?.colour !== this.colour){
-            killMoves.set(rightDiagonal.key(), rightDiagonal);
+        const leftDiagonal: Position = new Position(this.position.row + this.getCardinality(), this.position.col - 1);
+        killMoves.set(leftDiagonal.key(), leftDiagonal);
+        const rightDiagonal: Position = new Position(this.position.row + this.getCardinality(), this.position.col + 1);
+        killMoves.set(rightDiagonal.key(), rightDiagonal);
+
+        for(let [key, p] of killMoves){
+            if(!Utils.isLegalMove(this, p, board)){
+                killMoves.delete(key);
+            }
         }
 
         return killMoves;
