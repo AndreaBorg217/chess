@@ -18,6 +18,10 @@ class Position {
     public toString(): string {
         return `(${this.row}, ${this.col})`;
     }
+
+    public isEqual(position: Position): boolean {
+        return this.row === position.row && this.col === position.col;
+    }
 }
 
 export default Position;

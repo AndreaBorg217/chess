@@ -5,8 +5,10 @@ import Utils from "../../utils/utils";
 import Board from "../board";
 
 class King extends Piece{
+    initialPosition: Position
     constructor(colour: Colour, x: number, y: number){
-        super("king", colour, x, y);            
+        super("king", colour, x, y);
+        this.initialPosition = new Position(x, y);            
     }
     
     public evaluateMoves(board: Board, log: boolean = true): Map<string, Position>{
@@ -56,6 +58,10 @@ class King extends Piece{
             console.log("King can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));
         }
         return moves;
+    }
+
+    public hasMoved(): boolean{
+        return !this.position.isEqual(this.initialPosition);
     }
 }
 
