@@ -115,6 +115,10 @@
   background-color: rgba(255, 255, 255, 0.1);
 }
 
+.dead-piece{
+  padding-top: 2vh;
+}
+
 .dead-pieces {
   display: flex;
   flex-direction: column;
