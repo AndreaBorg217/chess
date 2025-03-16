@@ -47,19 +47,13 @@ class GameController {
         // clicked cell is empty or belongs to opponent
         } else if ((clickedCell === undefined || (clickedCell instanceof Piece && clickedCell.colour !== this.selectedPiece?.colour)) && this.selectedPiece instanceof Piece) {
             // check if clicked cell is a possible move
-            const possibleMoves: Map<string, Position> = this.selectedPiece.evaluateMoves(this.board, false);
+            let possibleMoves: Map<string, Position> = this.selectedPiece.evaluateMoves(this.board, false);
 
             // add castling moves
             if(this.selectedPiece instanceof King) {
                 const king: King = this.selectedPiece as King;
                 const rooks: Rook[] = this.board.getRooks(king.colour);
-
-                for (let rook of rooks) {
-                    const castlePosition = this.canCastle(king, rook);
-                    if(castlePosition) {
-                        possibleMoves.set(castlePosition.key(), castlePosition);
-                    }
-                }
+                possibleMoves = new Map([...possibleMoves, ...this.getCastleMoves(king, rooks)]);
             }
 
             let isPossibleMove = false;
@@ -119,19 +113,13 @@ class GameController {
             this.selectedPiece = clickedCell;
             
             // get possible moves
-            const possibleMoves: Map<string, Position> = clickedCell.evaluateMoves(this.board, true);
+            let possibleMoves: Map<string, Position> = clickedCell.evaluateMoves(this.board, true);
 
             // add castling moves
             if(clickedCell instanceof King) {
                 const king: King = clickedCell as King;
                 const rooks: Rook[] = this.board.getRooks(king.colour);
-
-                for (let rook of rooks) {
-                    const castlePosition = this.canCastle(king, rook);
-                    if(castlePosition) {
-                        possibleMoves.set(castlePosition.key(), castlePosition);
-                    }
-                }
+                possibleMoves = new Map([...possibleMoves, ...this.getCastleMoves(king, rooks)]);
             }
 
             // mark cells with possible moves for selected piece
@@ -302,6 +290,19 @@ class GameController {
         this.board.pieces[newPosition.row][newPosition.col] = this.board.pieces[oldPosition.row][oldPosition.col];
         this.board.pieces[oldPosition.row][oldPosition.col] = undefined;
         this.board.pieces[newPosition.row][newPosition.col]!.position = newPosition;
+    }
+
+    private getCastleMoves(king: King, rooks: Rook[]): Map<string, Position> {
+        let castleMoves: Map<string, Position> = new Map<string, Position>();
+
+        for (let rook of rooks) {
+            const castlePosition = this.canCastle(king, rook);
+            if(castlePosition) {
+                castleMoves.set(castlePosition.key(), castlePosition);
+            }
+        }
+
+        return castleMoves;
     }
 }
 export default GameController;
