@@ -85,7 +85,10 @@ class GameController {
 
                 // move rook
                 const newRookPosition: Position = new Position(newKingPosition.row, newKingPosition.col + rookMovementDirection);
-                const oldRookPosition: Position = new Position(newKingPosition.row, newKingPosition.col + (kingMovementDirection * 2));
+                const oldRookCol: number = newKingPosition.col + (kingMovementDirection * 2);
+                // queen-side castle moves rook 3 places, king-side castle moves rook 2 places
+                const adjustedRookCol: number = kingMovementDirection === 1 ? oldRookCol -1 : oldRookCol;
+                const oldRookPosition: Position = new Position(newKingPosition.row, adjustedRookCol);
                 this.board.pieces[newRookPosition.row][newRookPosition.col] = this.board.pieces[oldRookPosition.row][oldRookPosition.col];
                 this.board.pieces[oldRookPosition.row][oldRookPosition.col] = undefined;
                 this.board.pieces[newRookPosition.row][newRookPosition.col]!.position = newRookPosition;
