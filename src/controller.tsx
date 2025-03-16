@@ -31,14 +31,14 @@ class GameController {
         this.swappablePawn = undefined;
     }
 
-    public setUpdateCallback(callback: () => void) {
+    public setUpdateCallback(callback: () => void): void {
         this.updateUI = callback;
     }
 
     public handleClick(
         clickedPosition: Position,
         clickedCell: Piece | undefined, 
-    ) {
+    ): void {
         if(this.board.clickable[clickedPosition.row][clickedPosition.col] === false) {
             return;
         }
@@ -214,13 +214,13 @@ class GameController {
         }
     }
 
-    public handlePawnSwap(selectedPiece: Piece) {
+    public handlePawnSwap(selectedPiece: Piece): void {
         this.board.pieces[this.swappablePawn!.position.row][this.swappablePawn!.position.col] = selectedPiece;
         this.switchTurn();
         this.updateUI?.();
     }
 
-    private switchTurn() {
+    private switchTurn(): void {
         // check game state
         this.gameStates.set(Colour.WHITE, this.getGameState(Colour.WHITE));
         this.gameStates.set(Colour.BLACK, this.getGameState(Colour.BLACK));
@@ -286,7 +286,7 @@ class GameController {
         return new Position(king.position.row, king.position.col + (moveDirection * 2));
     }
 
-    private movePiece(oldPosition: Position, newPosition: Position) {
+    private movePiece(oldPosition: Position, newPosition: Position): void {
         this.board.pieces[newPosition.row][newPosition.col] = this.board.pieces[oldPosition.row][oldPosition.col];
         this.board.pieces[oldPosition.row][oldPosition.col] = undefined;
         this.board.pieces[newPosition.row][newPosition.col]!.position = newPosition;
