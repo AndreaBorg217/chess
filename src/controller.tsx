@@ -76,9 +76,7 @@ class GameController {
             // move piece
             const oldPosition: Position = this.selectedPiece.position;
             console.log("Moved", this.selectedPiece.name,"from", this.selectedPiece.position.toString(), "to", clickedPosition.toString());
-            this.board.pieces[clickedPosition.row][clickedPosition.col] = this.selectedPiece;
-            this.board.pieces[this.selectedPiece.position.row][this.selectedPiece.position.col] = undefined;
-            this.board.pieces[clickedPosition.row][clickedPosition.col]!.position = clickedPosition;
+            this.movePiece(oldPosition, clickedPosition);
 
             // if move is a castling move, move rook over king
             if(this.selectedPiece instanceof King && Math.abs(oldPosition.col - clickedPosition.col) === 2) {
@@ -92,9 +90,7 @@ class GameController {
                 // queen-side castle moves rook 3 places, king-side castle moves rook 2 places
                 const adjustedRookCol: number = kingMovementDirection === 1 ? oldRookCol -1 : oldRookCol;
                 const oldRookPosition: Position = new Position(newKingPosition.row, adjustedRookCol);
-                this.board.pieces[newRookPosition.row][newRookPosition.col] = this.board.pieces[oldRookPosition.row][oldRookPosition.col];
-                this.board.pieces[oldRookPosition.row][oldRookPosition.col] = undefined;
-                this.board.pieces[newRookPosition.row][newRookPosition.col]!.position = newRookPosition;
+                this.movePiece(oldRookPosition, newRookPosition);
                 console.log("Rook was castled from", oldRookPosition.toString(), "to", newRookPosition.toString());
             }
             
@@ -300,6 +296,12 @@ class GameController {
 
         console.log("Can castle");
         return new Position(king.position.row, king.position.col + (moveDirection * 2));
+    }
+
+    private movePiece(oldPosition: Position, newPosition: Position) {
+        this.board.pieces[newPosition.row][newPosition.col] = this.board.pieces[oldPosition.row][oldPosition.col];
+        this.board.pieces[oldPosition.row][oldPosition.col] = undefined;
+        this.board.pieces[newPosition.row][newPosition.col]!.position = newPosition;
     }
 }
 export default GameController;
