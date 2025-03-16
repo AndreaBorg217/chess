@@ -1,4 +1,5 @@
 import { ROWS, COLUMNS, Colour } from '../constants';
+import Board from '../models/board';
 import Position from '../models/position';
 
 
@@ -10,6 +11,10 @@ class Utils{
 
     public static switchColour(colour: Colour): Colour{
         return colour ===  Colour.WHITE ? Colour.BLACK : Colour.WHITE;
+    }
+
+    public static isLegalMove(p: Position, board: Board, colour: Colour): boolean{
+        return Utils.isWithinBounds(p) &&(board.pieces[p.row][p.col] === undefined || board.pieces[p.row][p.col]?.colour !== colour)
     }
 }
 

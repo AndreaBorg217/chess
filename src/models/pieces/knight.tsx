@@ -11,46 +11,25 @@ class Knight extends Piece{
     
     public evaluateMoves(board: Board, log: boolean = true): Map<string, Position>{
         let moves: Map<string, Position> = new Map<string, Position>();
-        // up 2, left 1
-        let p = new Position(this.position.row + 2, this.position.col - 1);
-        if(Utils.isWithinBounds(p) && (board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // up 2, right 1
-        p = new Position(this.position.row + 2, this.position.col + 1);
-        if(Utils.isWithinBounds(p) && (board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // up 1, left 3
-        p = new Position(this.position.row + 1, this.position.col - 2);
-        if(Utils.isWithinBounds(p) && (board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // up 1 right 3
-        p = new Position(this.position.row + 1, this.position.col + 2);
-        if(Utils.isWithinBounds(p) && (board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // down 2, left 1
-        p = new Position(this.position.row - 2, this.position.col - 1);
-        if(Utils.isWithinBounds(p) && (board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // down 2, right 1
-        p = new Position(this.position.row - 2, this.position.col + 1);
-        if(Utils.isWithinBounds(p) && (board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // down 1, left 3
-        p = new Position(this.position.row - 1, this.position.col - 2);
-        if(Utils.isWithinBounds(p) && (board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
-        // down 1, right 3
-        p = new Position(this.position.row - 1, this.position.col + 2);
-        if(Utils.isWithinBounds(p) && (board.pieces[p.row][p.col]?.colour !== this.colour)){
-            moves.set(p.key(), p);
-        }
+
+        const directions = [
+            { row: 2, col: -1 },  // up 2, left 1
+            { row: 2, col: 1 },   // up 2, right 1
+            { row: 1, col: -2 }, // up 1, left 3
+            { row: 1, col: 2 },  // up 1, right 3
+            { row: -2, col: -1 },  // down 2, left 1
+            { row: -2, col: 1 },   // down 2, right 1
+            { row: -1, col: -2 }, // down 1, left 3
+            { row: -1, col: 2 }    // down 1, right 3
+        ]
+
+        directions.forEach(direction => {
+            const p = new Position(this.position.row + direction.row, this.position.col + direction.col);
+            if(Utils.isLegalMove(p, board, this.colour)){
+                moves.set(p.key(), p);
+            }
+        });
+        
         if(log){
             console.log("Knight can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));
         }
