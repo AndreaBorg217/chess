@@ -1,7 +1,9 @@
 import Piece from './models/piece';
 import Position  from './models/position';
 import Board from './models/board';
-import { Colour, BOARD_MOVE, BOARD_KILL, GameState, ROWS, COLUMNS, LAST_ROW_MAP } from './constants';
+import { BOARD_MOVE, BOARD_KILL, ROWS, COLUMNS, LAST_ROW_MAP } from './constants';
+import { Colour } from './enums/colour';
+import {GameState} from './enums/game_state';
 import King from './models/pieces/king';
 import Pawn from './models/pieces/pawn';
 import Rook from './models/pieces/rook';
@@ -42,7 +44,8 @@ class GameController {
         }
         if (clickedCell === undefined && this.selectedPiece === undefined) {
             return;
-        } else if ((clickedCell === undefined || (clickedCell instanceof Piece && clickedCell.colour === this.getOpponentColour())) && this.selectedPiece instanceof Piece) {
+        // clicked cell is empty or belongs to opponent
+        } else if ((clickedCell === undefined || (clickedCell instanceof Piece && clickedCell.colour !== this.selectedPiece?.colour)) && this.selectedPiece instanceof Piece) {
             // check if clicked cell is a possible move
             const possibleMoves: Map<string, Position> = this.selectedPiece.evaluateMoves(this.board, false);
 
@@ -103,13 +106,14 @@ class GameController {
             }
 
             // check if piece was killed
-            if (clickedCell instanceof Piece && clickedCell.colour === this.getOpponentColour()) {
+            if (clickedCell instanceof Piece && clickedCell.colour === this.selectedPiece.getOpponentColour()) {
                 console.log("Killed", clickedCell.toString());
-                this.deadPieces.get(this.getOpponentColour())?.push(clickedCell);
+                this.deadPieces.get(clickedCell.getOpponentColour())?.push(clickedCell);
             }
 
             // switch turn
             this.switchTurn();
+        // selected another piece
         } else if (clickedCell instanceof Piece && clickedCell.colour === this.currentTurn) {
             if (this.selectedPiece) {
                 this.board.setBoardColours();
@@ -147,10 +151,6 @@ class GameController {
             }
         }
         this.updateUI?.();
-    }
-
-    private getOpponentColour(): Colour {
-        return this.currentTurn === Colour.WHITE ? Colour.BLACK : Colour.WHITE;
     }
 
     private getGameState(checkKingColour: Colour): GameState{
@@ -241,7 +241,9 @@ class GameController {
         this.gameStates.set(Colour.WHITE, this.getGameState(Colour.WHITE));
         this.gameStates.set(Colour.BLACK, this.getGameState(Colour.BLACK));
         // switch turn
-        this.currentTurn = this.getOpponentColour();
+        if (this.selectedPiece) {
+            this.currentTurn = this.selectedPiece.getOpponentColour();
+        }
         console.log("Switched turn to", this.currentTurn);
         this.swappablePawn = undefined;
         this.selectedPiece = undefined;

@@ -1,3 +1,4 @@
+import { Colour } from "./enums/colour";
 import Piece from "./models/piece";
 import Knight from "./models/pieces/knight";
 import Rook from "./models/pieces/rook";
@@ -6,17 +7,6 @@ import Queen from "./models/pieces/queen";
 import King from "./models/pieces/king";
 import Pawn from "./models/pieces/pawn";
 
-export enum Colour {
-    BLACK = "black",
-    WHITE = "white",
-};
-
-export enum GameState{
-    CHECK = "check",
-    CHECKMATE = "checkmate",
-    STALEMATE = "stalemate",
-    PLAY = "play",
-}
 
 export const ROWS: number = 8;
 export const COLUMNS: number = 8;

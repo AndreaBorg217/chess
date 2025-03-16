@@ -1,6 +1,6 @@
 import Piece from "../piece";
 import Position from "../position";
-import {Colour} from '../../constants'
+import { Colour } from "../../enums/colour";
 import Board from "../board";
 import Utils from "../../utils/utils";
 
@@ -29,7 +29,7 @@ class Knight extends Piece{
                 moves.set(p.key(), p);
             }
         });
-        
+
         if(log){
             console.log("Knight can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));
         }

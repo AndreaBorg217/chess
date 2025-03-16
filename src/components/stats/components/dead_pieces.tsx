@@ -1,4 +1,4 @@
-import { Colour} from "../../../constants";
+import { Colour } from "../../../enums/colour";
 import Piece from "../../../models/piece";
 
 function ColourDeadPieces({deadPieces}: {deadPieces: Piece[]}){

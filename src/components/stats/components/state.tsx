@@ -1,5 +1,5 @@
-import { Colour } from "../../../constants";
-import { GameState } from "../../../constants";
+import { Colour } from "../../../enums/colour";
+import { GameState } from "../../../enums/game_state";
 
 function ColourStateContainer({ colour, gameStates }: { colour: Colour, gameStates: Map<Colour, GameState> }) {
     return (

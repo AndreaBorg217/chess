@@ -1,4 +1,4 @@
-import {Colour} from '../constants'
+import { Colour } from '../enums/colour';
 import Position from './position'
 import Board from './board'
 
@@ -23,6 +23,10 @@ abstract class Piece {
 
     public toString(): string {
         return `${this.name}_${this.colour.charAt(0)}${this.position.toString()}`;
+    }
+
+    public getOpponentColour(): Colour {
+        return this.colour === Colour.WHITE ? Colour.BLACK : Colour.WHITE;
     }
     
     abstract evaluateMoves(board: Board, log: boolean): Map<string, Position>;

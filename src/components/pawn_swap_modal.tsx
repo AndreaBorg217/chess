@@ -1,6 +1,5 @@
 import GameController from "../controller";
 import Piece from "../models/piece";
-import Utils from "../utils/utils";
 import Bishop from "../models/pieces/bishop";
 import Knight from "../models/pieces/knight";
 import Pawn from "../models/pieces/pawn";

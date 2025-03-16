@@ -1,4 +1,5 @@
-import { ROWS, COLUMNS, Colour } from '../constants';
+import { ROWS, COLUMNS } from '../constants';
+import { Colour } from '../enums/colour';
 import Board from '../models/board';
 import Position from '../models/position';
 

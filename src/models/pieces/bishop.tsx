@@ -1,6 +1,6 @@
 import Piece from "../piece";
 import Position from "../position";
-import {Colour} from '../../constants'
+import { Colour } from "../../enums/colour";
 import Board from "../board";
 import MovementUtils from "../../utils/movement_utils";
 

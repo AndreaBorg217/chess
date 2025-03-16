@@ -1,4 +1,4 @@
-import { Colour } from "../../../constants"
+import { Colour } from "../../../enums/colour";
 
 export default function Turn({ currentTurn }: { currentTurn: Colour }) {
     return(

@@ -1,9 +1,8 @@
 import Piece from "../piece";
 import Position from "../position";
-import {Colour} from '../../constants'
+import { Colour } from "../../enums/colour";
 import Board from "../board";
 import Utils from '../../utils/utils';
-import { forEachChild } from "typescript";
 
 class Pawn extends Piece{
     initialPosition: Position;
