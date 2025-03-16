@@ -52,7 +52,7 @@ class GameController {
             // add castling moves
             if(this.selectedPiece instanceof King) {
                 const king: King = this.selectedPiece as King;
-                const rooks: Rook[] = this.getRooks(king.colour);
+                const rooks: Rook[] = this.board.getRooks(king.colour);
 
                 for (let rook of rooks) {
                     const castlePosition = this.canCastle(king, rook);
@@ -128,7 +128,7 @@ class GameController {
             // add castling moves
             if(clickedCell instanceof King) {
                 const king: King = clickedCell as King;
-                const rooks: Rook[] = this.getRooks(king.colour);
+                const rooks: Rook[] = this.board.getRooks(king.colour);
 
                 for (let rook of rooks) {
                     const castlePosition = this.canCastle(king, rook);
@@ -155,7 +155,7 @@ class GameController {
 
     private getGameState(checkKingColour: Colour): GameState{
         // find king
-        let king: King | undefined = this.getKing(checkKingColour);
+        let king: King | undefined = this.board.getKing(checkKingColour);
 
         if (king === undefined) {
             console.log(`${checkKingColour} king is in CHECKMATE`);
@@ -178,7 +178,7 @@ class GameController {
         }
         
         // get possible moves for all opponent pieces
-        let opponentPossibleMoves = this.getOpponentKills(Utils.switchColour(checkKingColour));
+        let opponentPossibleMoves = this.board.getOpponentKills(Utils.switchColour(checkKingColour));
 
         // filter out opponent moves that king's pieces can kill
         for (let key of kingPiecesCanKill.keys()) {
@@ -284,7 +284,7 @@ class GameController {
 
         // check if king will pass through check
         // get possible moves for all opponent pieces
-        let opponentPossibleMoves = this.getOpponentKills(Utils.switchColour(king.colour));
+        let opponentPossibleMoves = this.board.getOpponentKills(Utils.switchColour(king.colour));
 
         const kingCastleMoves: Map<string, Position> = new Map<string, Position>();
         let p: Position = new Position(king.position.row, king.position.col + (moveDirection * 2));
@@ -301,43 +301,5 @@ class GameController {
         console.log("Can castle");
         return new Position(king.position.row, king.position.col + (moveDirection * 2));
     }
-
-    private getKing(colour: Colour): King | undefined {
-        for(let row = 0; row < ROWS; row++) {
-            for(let col = 0; col < COLUMNS; col++) {
-                if(this.board.pieces[row][col] instanceof King && this.board.pieces[row][col]?.colour === colour) {
-                    return this.board.pieces[row][col] as King;
-                }
-            } 
-        }
-        return undefined;
-    }
-
-    private getRooks(colour: Colour): Rook[] {
-        let rooks: Rook[] = [];
-        for(let row = 0; row < ROWS; row++) {
-            for(let col = 0; col < COLUMNS; col++) {
-                if(this.board.pieces[row][col] instanceof Rook && this.board.pieces[row][col]?.colour === colour) {
-                    rooks.push(this.board.pieces[row][col] as Rook);
-                }
-            }
-        }
-        return rooks;
-    }
-
-    private getOpponentKills(colour: Colour): Map<string, Position> {
-        let opponentPossibleMoves: Map<string, Position> = new Map<string, Position>();
-        for(let row = 0; row < ROWS; row++) {
-            for(let col = 0; col < COLUMNS; col++) {
-                if(this.board.pieces[row][col] instanceof Piece && this.board.pieces[row][col]?.colour === colour) {
-                    const piece: Piece = this.board.pieces[row][col]!;
-                    const moves: Map<string, Position> = piece.getkillMoves(this.board, false);
-                    opponentPossibleMoves = new Map([...opponentPossibleMoves, ...moves]);
-                }
-            }
-        }
-        return opponentPossibleMoves;
-    }
-
 }
 export default GameController;
