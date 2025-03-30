@@ -43,12 +43,8 @@ class GameController {
         clickedPosition: Position,
         clickedCell: Piece | undefined, 
     ): void {
-        if(this.board.clickable[clickedPosition.row][clickedPosition.col] === false) {
+        if((this.board.clickable[clickedPosition.row][clickedPosition.col] === false) || clickedCell === undefined && this.selectedPiece === undefined) {
             return;
-        }
-        if (clickedCell === undefined && this.selectedPiece === undefined) {
-            return;
-        // clicked cell is empty or belongs to opponent
         } else if ((clickedCell === undefined || (clickedCell instanceof Piece && clickedCell.colour !== this.selectedPiece?.colour)) && this.selectedPiece instanceof Piece) {
             // check if clicked cell is a possible move
             let possibleMoves: Map<string, Position> = this.selectedPiece.evaluateMoves(this.board, false);
