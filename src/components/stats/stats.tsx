@@ -6,7 +6,7 @@ import DeadPieces from "./components/dead_pieces";
 export function Stats({controller}: {controller: GameController}) {
     return(
         <div id="stats-container">
-            <Turn currentTurn={controller.currentTurn}/>
+            <Turn controller={controller}/>
             <State gameStates={controller.gameStates}/>
             <DeadPieces deadPieces={controller.deadPieces}/>
         </div>

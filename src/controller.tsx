@@ -10,7 +10,7 @@ import Rook from './models/pieces/rook';
 import Utils from './utils/utils';
 
 class GameController {
-    board: Board;
+    board!: Board;
     selectedPiece: Piece | undefined;
     currentTurn: Colour = Colour.WHITE;
     deadPieces: Map<Colour, Piece[]> = new Map<Colour, Piece[]>();
@@ -20,6 +20,10 @@ class GameController {
     private updateUI?: () => void; 
 
     constructor() {
+        this.init();
+    }
+
+    private init(): void {
         this.board = new Board();
         this.selectedPiece = undefined;
         this.deadPieces.set(Colour.WHITE, []);
@@ -303,6 +307,12 @@ class GameController {
         }
 
         return castleMoves;
+    }
+
+    public restartGame(): void {
+        this.init();
+        this.updateUI?.();
+        console.log("Game restarted");
     }
 }
 export default GameController;

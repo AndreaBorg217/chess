@@ -164,7 +164,7 @@
   margin-top: 2.5vh;
 }
 
-.swappable-piece {
+.swappable-piece, #restart-button {
   width: 4.5vw;
   height: 4.5vw;
   cursor: pointer;
@@ -174,7 +174,7 @@
   padding: 0.8vw;
 }
 
-.swappable-piece:hover {
+.swappable-piece:hover, #restart-button:hover {
   transform: scale(1.1);
   filter: brightness(1.2);
 }
@@ -182,4 +182,11 @@
 h2 {
   margin-top: 0;
   font-size: 3vh;
+}
+
+#restart-button{
+  color: white;
+  font-size: 5vh;
+  border: none;
+  background-color: transparent;
 }
