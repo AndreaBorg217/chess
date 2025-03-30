@@ -43,7 +43,7 @@ class GameController {
         clickedPosition: Position,
         clickedCell: Piece | undefined, 
     ): void {
-        if((this.board.clickable[clickedPosition.row][clickedPosition.col] === false) || clickedCell === undefined && this.selectedPiece === undefined) {
+        if((this.board.clickable[clickedPosition.row][clickedPosition.col] === false) || (clickedCell === undefined && this.selectedPiece === undefined)) {
             return;
         } else if ((clickedCell === undefined || (clickedCell instanceof Piece && clickedCell.colour !== this.selectedPiece?.colour)) && this.selectedPiece instanceof Piece) {
             // check if clicked cell is a possible move
@@ -56,13 +56,7 @@ class GameController {
                 possibleMoves = new Map([...possibleMoves, ...this.getCastleMoves(king, rooks)]);
             }
 
-            let isPossibleMove = false;
-            for (let [key, position] of possibleMoves) {
-                if (position.key() === clickedPosition.key()) {
-                    isPossibleMove = true;
-                    break;
-                }
-            }
+            const isPossibleMove = possibleMoves.has(clickedPosition.key());
             if (!isPossibleMove){
                 return
             }
