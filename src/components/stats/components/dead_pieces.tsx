@@ -5,7 +5,7 @@ function ColourDeadPieces({deadPieces}: {deadPieces: Piece[]}){
     return (
         <div className='colour-dead-pieces'>
             {deadPieces.map((piece: Piece) => (
-                <img src={piece.image} alt={piece.name} className="dead-piece"/>
+                <img key={piece.position.key()} src={piece.image} alt={piece.name} className="dead-piece"/>
             ))}
         </div>
     );
