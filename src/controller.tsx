@@ -33,144 +33,90 @@ class GameController {
         this.gameStates.set(Colour.WHITE, GameState.PLAY);
         this.gameStates.set(Colour.BLACK, GameState.PLAY);
         this.swappablePawn = undefined;
+        this.currentTurn = Colour.WHITE;
     }
 
     public setUpdateCallback(callback: () => void): void {
         this.updateUI = callback;
     }
 
-    public handleClick(
-        clickedPosition: Position,
-        clickedCell: Piece | undefined, 
-    ): void {
-        if((this.board.clickable[clickedPosition.row][clickedPosition.col] === false) || (clickedCell === undefined && this.selectedPiece === undefined)) {
-            return;
-        } else if ((clickedCell === undefined || (clickedCell instanceof Piece && clickedCell.colour !== this.selectedPiece?.colour)) && this.selectedPiece instanceof Piece) {
-            // check if clicked cell is a possible move
-            let possibleMoves: Map<string, Position> = this.selectedPiece.evaluateMoves(this.board, false);
-
-            // add castling moves
-            if(this.selectedPiece instanceof King) {
-                const king: King = this.selectedPiece as King;
-                const rooks: Rook[] = this.board.getRooks(king.colour);
-                possibleMoves = new Map([...possibleMoves, ...this.getCastleMoves(king, rooks)]);
-            }
-
-            const isPossibleMove = possibleMoves.has(clickedPosition.key());
-            if (!isPossibleMove){
-                return
-            }
-
-            // move piece
-            const oldPosition: Position = this.selectedPiece.position;
-            console.log("Moved", this.selectedPiece.name,"from", this.selectedPiece.position.toString(), "to", clickedPosition.toString());
-            this.movePiece(oldPosition, clickedPosition);
-
-            // if move is a castling move, move rook over king
-            if(this.selectedPiece instanceof King && Math.abs(oldPosition.col - clickedPosition.col) === 2) {
-                const newKingPosition: Position = clickedPosition;
-                const kingMovementDirection: number = newKingPosition.col > oldPosition.col ? 1 : -1;
-                const rookMovementDirection: number = kingMovementDirection * -1;
-
-                // move rook
-                const newRookPosition: Position = new Position(newKingPosition.row, newKingPosition.col + rookMovementDirection);
-                const oldRookCol: number = newKingPosition.col + (kingMovementDirection * 2);
-                // queen-side castle moves rook 3 places, king-side castle moves rook 2 places
-                const adjustedRookCol: number = kingMovementDirection === 1 ? oldRookCol -1 : oldRookCol;
-                const oldRookPosition: Position = new Position(newKingPosition.row, adjustedRookCol);
-                this.movePiece(oldRookPosition, newRookPosition);
-                console.log("Rook was castled from", oldRookPosition.toString(), "to", newRookPosition.toString());
-            }
-            
-            // check if pawn reached last row
-            this.getSwappablePawn();
-            if (this.swappablePawn) {
-                this.updateUI?.(); // to show the piece swap dialog
-                return;
-            }
-
-            // check if piece was killed
-            if (clickedCell instanceof Piece && clickedCell.colour === this.selectedPiece.getOpponentColour()) {
-                console.log("Killed", clickedCell.toString());
-                this.deadPieces.get(clickedCell.getOpponentColour())?.push(clickedCell);
-            }
-
-            // switch turn
-            this.switchTurn();
-        // selected another piece
-        } else if (clickedCell instanceof Piece && clickedCell.colour === this.currentTurn) {
-            if (this.selectedPiece) {
-                this.board.setBoardColours();
-            }
-            // select piece
-            console.log("Selected piece: ", clickedCell.toString());
-            this.selectedPiece = clickedCell;
-            
-            // get possible moves
-            let possibleMoves: Map<string, Position> = clickedCell.evaluateMoves(this.board, true);
-
-            // add castling moves
-            if(clickedCell instanceof King) {
-                const king: King = clickedCell as King;
-                const rooks: Rook[] = this.board.getRooks(king.colour);
-                possibleMoves = new Map([...possibleMoves, ...this.getCastleMoves(king, rooks)]);
-            }
-
-            // mark cells with possible moves for selected piece
-            for (let [key, position] of possibleMoves) {
-                if (this.board.pieces[position.row][position.col] === undefined) {
-                    this.board.backgroundColours[position.row][position.col] = BOARD_MOVE;
-                    console.log("Marked cell", position.toString(), "as possible move");
-                }
-                else {
-                    this.board.backgroundColours[position.row][position.col] = BOARD_KILL;
-                    console.log("Marked cell", position.toString(), "as possible kill");
-                }
-            }
-        }
-        this.updateUI?.();
+    private isCellClickable(board: Board, position: Position): boolean {
+        return board.clickable[position.row][position.col];
     }
 
-    private getGameState(checkKingColour: Colour): GameState{
-        // find king
-        let king: King | undefined = this.board.getKing(checkKingColour);
+    private isAttemptingToMoveUnselectedPiece(clickedCell: Piece | undefined): boolean {
+        return clickedCell === undefined && this.selectedPiece === undefined;
+    }
 
-        if (king === undefined) {
-            console.log(`${checkKingColour} king is in CHECKMATE`);
-            return GameState.CHECKMATE;
+    private isMovingPiece(clickedCell: Piece | undefined): boolean {
+        const clickedCellIsEmpty = clickedCell === undefined;
+        const clickedCellBelongsToOpponent = clickedCell instanceof Piece && clickedCell.colour !== this.selectedPiece?.colour;
+        const pieceIsSelected = this.selectedPiece !== undefined;
+        return pieceIsSelected && (clickedCellBelongsToOpponent || clickedCellIsEmpty);
+    }
+
+    private isCastlingMove(kingOldPosition: Position, clickedPosition: Position): boolean {
+        if (this.selectedPiece === undefined) {
+            return false;
         }
-
-        // get king's possible moves
-        const kingPossibleMoves: Map<string, Position> = king!.evaluateMoves(this.board, false);
-
-        // get kill moves for king's colour
-        let kingPiecesCanKill: Map<string, Position> = new Map<string, Position>();
-        for(let row = 0; row < ROWS; row++) {
-            for(let col = 0; col < COLUMNS; col++) {
-                if(this.board.pieces[row][col] instanceof Piece && this.board.pieces[row][col]?.colour === checkKingColour) {
-                const piece: Piece = this.board.pieces[row][col]!;
-                const moves: Map<string, Position> = piece.getkillMoves(this.board, false);
-                kingPiecesCanKill = new Map([...kingPiecesCanKill, ...moves]);
-                }
-            }
+        const selectedIsKing = this.selectedPiece instanceof King;
+        if (!selectedIsKing) {
+            return false;
         }
-        
-        // get possible moves for all opponent pieces
-        let opponentPossibleMoves = this.board.getOpponentKills(Utils.switchColour(checkKingColour));
+        const moveIsTwoSpacesHorizontally = Math.abs(kingOldPosition.col - clickedPosition.col) === 2;
+        return selectedIsKing && moveIsTwoSpacesHorizontally;
+    }
 
-        // filter out opponent moves that king's pieces can kill
-        for (let key of kingPiecesCanKill.keys()) {
-            opponentPossibleMoves.delete(key);
+    private isPieceGettingKilled(clickedCell: Piece | undefined): boolean {
+        if (clickedCell === undefined || this.selectedPiece === undefined) {
+            return false;
         }
-        
-        let kingPossibleMovesKeys: string[] = Array.from(kingPossibleMoves.keys());
-        let opponentPossibleMovesKeys: string[] = Array.from(opponentPossibleMoves.keys());
+        const clickedPiece =  clickedCell instanceof Piece;
+        const pieceBelongsToOpponent = clickedCell.colour === this.selectedPiece.getOpponentColour()
+        return clickedPiece && pieceBelongsToOpponent;
+    }
 
-        const kingCurrentPositionKey: Position = king!.position;  
-        const kingCurrentPositionInOpponentMoves: boolean = opponentPossibleMovesKeys.includes(kingCurrentPositionKey.key());
+    private isChangingSelectedPiece(clickedCell: Piece | undefined): boolean {
+        const clickedPiece = clickedCell instanceof Piece;
+        const pieceBelongsToCurrentTurn = clickedCell?.colour === this.currentTurn;
+        return clickedPiece && pieceBelongsToCurrentTurn;
+    }
+
+    private gameIsInStalemate(king: King, opponentPossibleMovesKeys: string[], kingPossibleMovesKeys: string[]): boolean {
+        const kingCurrentPosition: Position = king.position;  
+        const kingCurrentPositionInOpponentMoves: boolean = opponentPossibleMovesKeys.includes(kingCurrentPosition.key());
         const allKingMovesInOpponentMoves: boolean = kingPossibleMovesKeys.every(move => opponentPossibleMovesKeys.includes(move));
+
+        const kingIsInCheck: boolean = this.kingInCheck.get(king.colour) || false;
+        const kingHasPossibleMoves: boolean = kingPossibleMovesKeys.length > 0;
         // if king current position is not in check && all king moves are in opponent moves -> stalemate
-        if (!this.kingInCheck.get(checkKingColour) && ((kingPossibleMovesKeys.length > 0 && allKingMovesInOpponentMoves) || (kingPossibleMovesKeys.length === 0 && kingCurrentPositionInOpponentMoves))) {
+        if (kingIsInCheck) {
+            return false;
+        }
+
+        // King can move but anywhere he goes he's in check -> stalemate
+        if (kingHasPossibleMoves && allKingMovesInOpponentMoves) {
+            console.log("King has possible moves but all moves are in opponent moves, stalemate");
+            return true;
+        }
+
+        // King has no possible moves (and is not in check) -> stalemate
+        if (!kingHasPossibleMoves && kingCurrentPositionInOpponentMoves) {
+            console.log("King has no possible moves and current position is in opponent moves, stalemate");
+            return true;
+        }
+
+        return false;
+    }
+
+    private determineGameState(king: King, kingPossibleMoves: Map<string, Position>, opponentPossibleMoves: Map<string, Position>): GameState {
+        const opponentPossibleMovesKeys = Array.from(opponentPossibleMoves.keys());
+        const kingPossibleMovesKeys = Array.from(kingPossibleMoves.keys());
+        const checkKingColour = king.colour;
+        const kingCurrentPositionInOpponentMoves: boolean = opponentPossibleMovesKeys.includes(king.position.key());
+        const allKingMovesInOpponentMoves: boolean = kingPossibleMovesKeys.every(move => opponentPossibleMovesKeys.includes(move));
+
+        if (this.gameIsInStalemate(king, opponentPossibleMovesKeys, kingPossibleMovesKeys)) {
             console.log("Game is in STALEMATE");
             this.board.disableBoard();
             return GameState.STALEMATE;
@@ -195,6 +141,146 @@ class GameController {
         }
         this.kingInCheck.set(checkKingColour, false);
         return GameState.PLAY;
+    }
+
+    public handleClick(
+        clickedPosition: Position,
+        clickedCell: Piece | undefined, 
+    ): void {
+        if(!this.isCellClickable(this.board, clickedPosition) || this.isAttemptingToMoveUnselectedPiece(clickedCell)) {
+            return;
+        } else if (this.isMovingPiece(clickedCell)) {
+            // check if clicked cell is a possible move
+            if (this.selectedPiece === undefined) {
+                return;
+            }
+            let possibleMoves: Map<string, Position> = this.selectedPiece.evaluateMoves(this.board, false);
+
+            // add castling moves
+            if(this.selectedPiece instanceof King) {
+                const king: King = this.selectedPiece as King;
+                const rooks: Rook[] = this.board.getRooks(king.colour);
+                possibleMoves = new Map([...possibleMoves, ...this.getCastleMoves(king, rooks)]);
+            }
+
+            const isPossibleMove = possibleMoves.has(clickedPosition.key());
+            if (!isPossibleMove){
+                return
+            }
+
+            // move piece
+            const oldPosition: Position = this.selectedPiece.position;
+            console.log("Moved", this.selectedPiece.name,"from", this.selectedPiece.position.toString(), "to", clickedPosition.toString());
+            this.movePiece(oldPosition, clickedPosition);
+
+            // if move is a castling move, move rook over king
+            if(this.isCastlingMove(oldPosition, clickedPosition)) {
+                const newKingPosition: Position = clickedPosition;
+                // if king moves two spaces to the right, rook moves from right of king to left of new king position
+                // if king moves two spaces to the left, rook moves from left of king to right of new king position
+                const kingMovementDirection: number = newKingPosition.col > oldPosition.col ? 1 : -1;
+                const rookMovementDirection: number = kingMovementDirection * -1;
+
+                // move rook
+                const newRookPosition: Position = new Position(newKingPosition.row, newKingPosition.col + rookMovementDirection);
+                const oldRookCol: number = newKingPosition.col + (kingMovementDirection * 2);
+                // queen-side castle moves rook 3 places, king-side castle moves rook 2 places
+                const adjustedRookCol: number = kingMovementDirection === 1 ? oldRookCol -1 : oldRookCol;
+                const oldRookPosition: Position = new Position(newKingPosition.row, adjustedRookCol);
+                this.movePiece(oldRookPosition, newRookPosition);
+                console.log("Rook was castled from", oldRookPosition.toString(), "to", newRookPosition.toString());
+            }
+            
+            // check if pawn reached last row
+            this.getSwappablePawn();
+            if (this.swappablePawn) {
+                this.updateUI?.(); // to show the piece swap dialog
+                return;
+            }
+
+
+            // check if piece was killed
+            if (this.isPieceGettingKilled(clickedCell)) {
+                if (clickedCell === undefined) {
+                    return;
+                }
+                console.log("Killed", clickedCell.toString());
+                this.deadPieces.get(clickedCell.getOpponentColour())?.push(clickedCell);
+            }
+        
+            // switch turn
+            this.switchTurn();
+        // selected another piece
+        } else if (this.isChangingSelectedPiece(clickedCell)) {
+            if (this.selectedPiece) {
+                this.board.setBoardColours();
+            }
+            if (clickedCell === undefined) {
+                return;
+            }
+            // select piece
+            console.log("Selected piece: ", clickedCell.toString());
+            this.selectedPiece = clickedCell;
+            
+            // get possible moves
+            let possibleMoves: Map<string, Position> = clickedCell.evaluateMoves(this.board, true);
+
+            // add castling moves
+            if(clickedCell instanceof King) {
+                const king: King = clickedCell as King;
+                const rooks: Rook[] = this.board.getRooks(king.colour);
+                possibleMoves = new Map([...possibleMoves, ...this.getCastleMoves(king, rooks)]);
+            }
+
+            // mark cells with possible moves for selected piece
+            for (let [_, position] of possibleMoves) {
+                if (this.board.pieces[position.row][position.col] === undefined) {
+                    this.board.backgroundColours[position.row][position.col] = BOARD_MOVE;
+                    console.log("Marked cell", position.toString(), "as possible move");
+                }
+                else {
+                    this.board.backgroundColours[position.row][position.col] = BOARD_KILL;
+                    console.log("Marked cell", position.toString(), "as possible kill");
+                }
+            }
+        }
+        this.updateUI?.();
+    }
+
+    private getGameState(checkKingColour: Colour): GameState{
+        // find king
+        let king: King | undefined = this.board.getKing(checkKingColour);
+
+        // king not found
+        if (king === undefined) {
+            console.log(`${checkKingColour} king is in CHECKMATE`);
+            return GameState.CHECKMATE;
+        }
+
+        // get king's possible moves
+        const kingPossibleMoves: Map<string, Position> = king.evaluateMoves(this.board, false);
+
+        // get kill moves for king's colour
+        let kingPiecesCanKill: Map<string, Position> = new Map<string, Position>();
+        for(let row = 0; row < ROWS; row++) {
+            for(let col = 0; col < COLUMNS; col++) {
+                if(this.board.pieces[row][col] instanceof Piece && this.board.pieces[row][col]?.colour === king.colour) {
+                const piece: Piece = this.board.pieces[row][col]!;
+                const moves: Map<string, Position> = piece.getKillMoves(this.board, false);
+                kingPiecesCanKill = new Map([...kingPiecesCanKill, ...moves]);
+                }
+            }
+        }
+        
+        // get possible moves for all opponent pieces
+        let opponentPossibleMoves = this.board.getOpponentKills(Utils.switchColour(king.colour));
+
+        // filter out opponent moves that king's pieces can kill
+        for (let key of kingPiecesCanKill.keys()) {
+            opponentPossibleMoves.delete(key);
+        }
+        
+        return this.determineGameState(king, kingPossibleMoves, opponentPossibleMoves);
     }
 
     private getSwappablePawn(): void {
@@ -230,13 +316,6 @@ class GameController {
     }
 
     private canCastle(king: King, rook: Rook): Position | undefined {
-
-        // check if king is in check
-        if(this.kingInCheck.get(king.colour)) {
-            console.log("King is in check, cannot castle");
-            return undefined;
-        }
-
         // check if king moved
         if(king.hasMoved()) {
             console.log("King has moved, cannot castle");
@@ -246,6 +325,13 @@ class GameController {
         // check if rook moved
         if(rook.hasMoved()) {
             console.log("Rook has moved, cannot castle");
+            return undefined;
+        }
+        
+        
+        // check if king is in check
+        if(this.kingInCheck.get(king.colour)) {
+            console.log("King is in check, cannot castle");
             return undefined;
         }
         

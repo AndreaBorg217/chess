@@ -11,7 +11,7 @@ class Pawn extends Piece{
         this.initialPosition = new Position(x, y);
     }
     
-    public getkillMoves(board: Board): Map<string, Position>{
+    public getKillMoves(board: Board): Map<string, Position>{
         const leftDiagonal: Position = new Position(this.position.row + this.getCardinality(), this.position.col - 1);
         const rightDiagonal: Position = new Position(this.position.row + this.getCardinality(), this.position.col + 1);
 
@@ -30,7 +30,7 @@ class Pawn extends Piece{
         const FIRST_MOVE: number = 2;
         const OTHER_MOVES: number = 1;
 
-        const killMoves: Map<string, Position> = this.getkillMoves(board);
+        const killMoves: Map<string, Position> = this.getKillMoves(board);
         
         let forwardMoves: Map<string, Position> = new Map<string, Position>();
         

@@ -16,7 +16,7 @@ abstract class Piece {
     }
 
     // to handle Pawn diagonal moves
-    public getkillMoves(board: Board, log: boolean): Map<string, Position> {
+    public getKillMoves(board: Board, log: boolean): Map<string, Position> {
         return this.evaluateMoves(board, log);
     }
     

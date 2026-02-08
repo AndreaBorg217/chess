@@ -75,7 +75,7 @@ class Board{
             for(let col = 0; col < COLUMNS; col++) {
                 if(this.pieces[row][col] instanceof Piece && this.pieces[row][col]?.colour === colour) {
                     const piece: Piece = this.pieces[row][col]!;
-                    const moves: Map<string, Position> = piece.getkillMoves(this, false);
+                    const moves: Map<string, Position> = piece.getKillMoves(this, false);
                     opponentPossibleMoves = new Map([...opponentPossibleMoves, ...moves]);
                 }
             }
