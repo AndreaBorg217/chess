@@ -36,17 +36,14 @@ A cell in `Board` can be of type `Piece` or `undefined`. `Piece` is an abstract 
 
 A `Piece` tracks its location on the `Board` using `Position`. `Position` provides utilities for comparing the location of two pieces on the board. It is also used to determine which cell has been clicked in the board UI.
 
+A distinction is to be made between `clickedCell` and `clickedPostion` in the controller's `handleClick`. `clickedCell` contains the state of the cell when it was clicked, before pieces were move etc. `clickedPosition` stores the coordinates that were clicked.
+
 ### Pawn
 
 `getKillMoves` is used for the `Pawn`, other pieces just return `evaluateMoves`. This is because all pieces can move and kill, however a `Pawn` can only kill with a diagonal move.
 
 Since the `Pawn` can only move in one direction, vertically towards the other side of the board, `getCardinality` uses the colour of the `Pawn` to determine this direction.
 
-#### Castling
-
-#### Pawn Promotion
-
-#### En passant
 
 ## Running the Solution
 
