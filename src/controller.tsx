@@ -1,6 +1,7 @@
 import Piece from './models/piece';
 import Position  from './models/position';
 import Board from './models/board';
+import Move from './models/move';
 import { BOARD_MOVE, BOARD_KILL, ROWS, COLUMNS, LAST_ROW_MAP } from './constants';
 import { Colour } from './enums/colour';
 import {GameState} from './enums/game_state';
@@ -17,6 +18,7 @@ class GameController {
     kingInCheck: Map<Colour, boolean> = new Map<Colour, boolean>();
     gameStates: Map<Colour, GameState> = new Map<Colour, GameState>();
     swappablePawn: Pawn | undefined;
+    history: Move[] = [];
     private updateUI?: () => void; 
 
     constructor() {
@@ -34,6 +36,7 @@ class GameController {
         this.gameStates.set(Colour.BLACK, GameState.PLAY);
         this.swappablePawn = undefined;
         this.currentTurn = Colour.WHITE;
+        this.history = [];
     }
 
     public setUpdateCallback(callback: () => void): void {
@@ -172,6 +175,7 @@ class GameController {
             const oldPosition: Position = this.selectedPiece.position;
             console.log("Moved", this.selectedPiece.name,"from", this.selectedPiece.position.toString(), "to", clickedPosition.toString());
             this.movePiece(oldPosition, clickedPosition);
+            let move: Move = new Move(this.selectedPiece, oldPosition, clickedPosition);
 
             // if move is a castling move, move rook over king
             if(this.isCastlingMove(oldPosition, clickedPosition)) {
@@ -189,12 +193,18 @@ class GameController {
                 const oldRookPosition: Position = new Position(newKingPosition.row, adjustedRookCol);
                 this.movePiece(oldRookPosition, newRookPosition);
                 console.log("Rook was castled from", oldRookPosition.toString(), "to", newRookPosition.toString());
+
+                move.castle = true;
             }
             
             // check if pawn reached last row
             this.getSwappablePawn();
             if (this.swappablePawn) {
                 this.updateUI?.(); // to show the piece swap dialog
+                move.pawnPromoted = true;
+                this.history.push(move);
+                console.log("Added move to history: ", move);
+                console.log("Pawn promoted, waiting for player to select piece");
                 return;
             }
 
@@ -206,7 +216,11 @@ class GameController {
                 }
                 console.log("Killed", clickedCell.toString());
                 this.deadPieces.get(clickedCell.getOpponentColour())?.push(clickedCell);
+                move.kill = true;
             }
+
+            this.history.push(move);
+            console.log("Added move to history: ", move);
         
             // switch turn
             this.switchTurn();
