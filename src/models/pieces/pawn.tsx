@@ -3,6 +3,7 @@ import Position from "../position";
 import { Colour } from "../../enums/colour";
 import Board from "../board";
 import Utils from '../../utils/utils';
+import Move from "../move";
 
 class Pawn extends Piece{
     initialPosition: Position;
@@ -11,37 +12,87 @@ class Pawn extends Piece{
         this.initialPosition = new Position(x, y);
     }
     
-    public getkillMoves(board: Board): Map<string, Position>{
-        const leftDiagonal: Position = new Position(this.position.row + this.getCardinality(), this.position.col - 1);
-        const rightDiagonal: Position = new Position(this.position.row + this.getCardinality(), this.position.col + 1);
+    public getEnPassantMove(board: Board, history: Move[], log: boolean=true): Position | undefined{
+        if (history.length === 0) {
+            return undefined;
+        }
+
+        // Check if the last move was a two-square pawn advance by the opponent
+        const lastOpponentMove = history[history.length - 1];
+        if (lastOpponentMove.piece.colour === this.colour) {
+            return undefined;
+        }
+        if (!(lastOpponentMove.piece instanceof Pawn)) {
+            return undefined;
+        }
+        if (Math.abs(lastOpponentMove.oldPosition.row - lastOpponentMove.newPosition.row) !== 2) {
+            return undefined;
+        }
+
+        // Check if the opponent's pawn is adjacent to the current pawn
+        const opponentPawnPosition = lastOpponentMove.newPosition;
+        if (opponentPawnPosition.row !== this.currentPosition.row) {
+            return undefined;
+        }
+        if (Math.abs(opponentPawnPosition.col - this.currentPosition.col) !== 1) {
+            return undefined;
+        }
+
+        // The en passant capture position is directly behind the opponent's pawn
+        const enPassantRow = this.currentPosition.row + this.getCardinality();
+        const enPassantCol = opponentPawnPosition.col;
+        const enPassantPosition = new Position(enPassantRow, enPassantCol);
+
+        // For sanity check it is empty (it should always be)
+        if (board.pieces[enPassantPosition.row][enPassantPosition.col] !== undefined) {
+            return undefined;
+        }
+        return enPassantPosition;
+    }
+    
+    public getKillMoves(board: Board, history: Move[]): Map<string, Position>{
+        const leftDiagonal: Position = new Position(this.currentPosition.row + this.getCardinality(), this.currentPosition.col - 1);
+        const rightDiagonal: Position = new Position(this.currentPosition.row + this.getCardinality(), this.currentPosition.col + 1);
 
         let killMoves: Map<string, Position> = new Map<string, Position>();
-        if(Utils.isWithinBounds(leftDiagonal) && board.pieces[leftDiagonal.row][leftDiagonal.col] instanceof Piece && board.pieces[leftDiagonal.row][leftDiagonal.col]?.colour !== this.colour){
+        const leftDiagonalWithinBoard = Utils.isWithinBoard(leftDiagonal);
+        const leftDiagonalContainsOpponentPiece = board.pieces[leftDiagonal.row][leftDiagonal.col] instanceof Piece;
+        const leftDiagonalContainsOpponentColour = board.pieces[leftDiagonal.row][leftDiagonal.col]?.colour !== this.colour;
+        if(leftDiagonalWithinBoard && leftDiagonalContainsOpponentPiece && leftDiagonalContainsOpponentColour){
             killMoves.set(leftDiagonal.key(), leftDiagonal);
         }
-        if(Utils.isWithinBounds(rightDiagonal) && board.pieces[rightDiagonal.row][rightDiagonal.col] instanceof Piece && board.pieces[rightDiagonal.row][rightDiagonal.col]?.colour !== this.colour){
+
+        const rightDiagonalWithinBoard = Utils.isWithinBoard(rightDiagonal);
+        const rightDiagonalContainsOpponentPiece = board.pieces[rightDiagonal.row][rightDiagonal.col] instanceof Piece;
+        const rightDiagonalContainsOpponentColour = board.pieces[rightDiagonal.row][rightDiagonal.col]?.colour !== this.colour;
+        if(rightDiagonalWithinBoard && rightDiagonalContainsOpponentPiece && rightDiagonalContainsOpponentColour){
             killMoves.set(rightDiagonal.key(), rightDiagonal);
+        }
+
+        const enPassantMove = this.getEnPassantMove(board, history);
+        if(enPassantMove){
+            killMoves.set(enPassantMove.key(), enPassantMove);
         }
 
         return killMoves;
     }
     
-    public evaluateMoves(board: Board, log: boolean = true): Map<string, Position>{
+    public evaluateMoves(board: Board, history: Move[] = [], log: boolean = true): Map<string, Position>{
         const FIRST_MOVE: number = 2;
         const OTHER_MOVES: number = 1;
 
-        const killMoves: Map<string, Position> = this.getkillMoves(board);
+        const killMoves: Map<string, Position> = this.getKillMoves(board, history);
         
         let forwardMoves: Map<string, Position> = new Map<string, Position>();
         
         // 1 move forward
-        let p: Position = new Position(this.position.row + (this.getCardinality() * OTHER_MOVES), this.position.col);
+        let p: Position = new Position(this.currentPosition.row + (this.getCardinality() * OTHER_MOVES), this.currentPosition.col);
         if(board.pieces[p.row][p.col] === undefined){
             forwardMoves.set(p.key(), p)
         }
                 
-        if (this.position.isEqual(this.initialPosition)){
-            let p = new Position(this.position.row + (this.getCardinality() * FIRST_MOVE), this.position.col);
+        if (this.currentPosition.isEqual(this.initialPosition)){
+            let p = new Position(this.currentPosition.row + (this.getCardinality() * FIRST_MOVE), this.currentPosition.col);
             if(board.pieces[p.row][p.col] === undefined && forwardMoves.size > 0){ // if there is a piece in front, we can't move 2 steps
                 forwardMoves.set(p.key(), p)
             }

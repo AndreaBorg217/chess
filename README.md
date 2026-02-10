@@ -26,6 +26,25 @@ The project is organized into the following key directories:
 - **`Board.tsx`**: Renders the chessboard and handles user interactions like piece movement.
 - **`Controller.tsx`**: Implements the game logic and orchestrates the game by managing all state including the board, turn, allowance of special moves, game end etc.
 
+### Details about the algorithm
+
+### The Board
+
+`Board` stores the pieces (or absence thereof) in a matrix, as well as the background colours of the cells and if they can be clicked. 
+
+A cell in `Board` can be of type `Piece` or `undefined`. `Piece` is an abstract class used to implement a common interface for moving logic. `evaluateMoves` is used to determine where a piece can move, including kills. This means that if a `Piece` moves to a cell containing another `Piece` of a different colour, it is identified as a kill.
+
+A `Piece` tracks its location on the `Board` using `Position`. `Position` provides utilities for comparing the location of two pieces on the board. It is also used to determine which cell has been clicked in the board UI.
+
+A distinction is to be made between `clickedCell` and `clickedPostion` in the controller's `handleClick`. `clickedCell` contains the state of the cell when it was clicked, before pieces were move etc. `clickedPosition` stores the coordinates that were clicked.
+
+### Pawn
+
+`getKillMoves` is used for the `Pawn`, other pieces just return `evaluateMoves`. This is because all pieces can move and kill, however a `Pawn` can only kill with a diagonal move.
+
+Since the `Pawn` can only move in one direction, vertically towards the other side of the board, `getCardinality` uses the colour of the `Pawn` to determine this direction.
+
+
 ## Running the Solution
 
 To run the application locally, follow these steps:

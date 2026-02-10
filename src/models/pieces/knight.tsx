@@ -3,13 +3,14 @@ import Position from "../position";
 import { Colour } from "../../enums/colour";
 import Board from "../board";
 import Utils from "../../utils/utils";
+import Move from "../move";
 
 class Knight extends Piece{
     constructor(colour: Colour, x: number, y: number){
         super("knight", colour, x, y);            
     }
     
-    public evaluateMoves(board: Board, log: boolean = true): Map<string, Position>{
+    public evaluateMoves(board: Board, history: Move[], log: boolean = true): Map<string, Position>{
         let moves: Map<string, Position> = new Map<string, Position>();
 
         const directions = [
@@ -24,7 +25,7 @@ class Knight extends Piece{
         ]
 
         directions.forEach(direction => {
-            const p = new Position(this.position.row + direction.row, this.position.col + direction.col);
+            const p = new Position(this.currentPosition.row + direction.row, this.currentPosition.col + direction.col);
             if(Utils.isLegalMove(p, board, this.colour)){
                 moves.set(p.key(), p);
             }
