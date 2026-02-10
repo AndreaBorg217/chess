@@ -20,10 +20,6 @@ class Rook extends Piece{
         }
         return moves;
     }
-
-    public hasMoved(): boolean{
-        return !this.position.isEqual(this.initialPosition);
-    }
 }
 
 export default Rook

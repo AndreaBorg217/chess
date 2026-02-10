@@ -31,15 +31,15 @@ class Pawn extends Piece{
 
         // Check if the opponent's pawn is adjacent to the current pawn
         const opponentPawnPosition = lastOpponentMove.newPosition;
-        if (opponentPawnPosition.row !== this.position.row) {
+        if (opponentPawnPosition.row !== this.currentPosition.row) {
             return undefined;
         }
-        if (Math.abs(opponentPawnPosition.col - this.position.col) !== 1) {
+        if (Math.abs(opponentPawnPosition.col - this.currentPosition.col) !== 1) {
             return undefined;
         }
 
         // The en passant capture position is directly behind the opponent's pawn
-        const enPassantRow = this.position.row + this.getCardinality();
+        const enPassantRow = this.currentPosition.row + this.getCardinality();
         const enPassantCol = opponentPawnPosition.col;
         const enPassantPosition = new Position(enPassantRow, enPassantCol);
 
@@ -51,8 +51,8 @@ class Pawn extends Piece{
     }
     
     public getKillMoves(board: Board, history: Move[]): Map<string, Position>{
-        const leftDiagonal: Position = new Position(this.position.row + this.getCardinality(), this.position.col - 1);
-        const rightDiagonal: Position = new Position(this.position.row + this.getCardinality(), this.position.col + 1);
+        const leftDiagonal: Position = new Position(this.currentPosition.row + this.getCardinality(), this.currentPosition.col - 1);
+        const rightDiagonal: Position = new Position(this.currentPosition.row + this.getCardinality(), this.currentPosition.col + 1);
 
         let killMoves: Map<string, Position> = new Map<string, Position>();
         const leftDiagonalWithinBoard = Utils.isWithinBoard(leftDiagonal);
@@ -86,13 +86,13 @@ class Pawn extends Piece{
         let forwardMoves: Map<string, Position> = new Map<string, Position>();
         
         // 1 move forward
-        let p: Position = new Position(this.position.row + (this.getCardinality() * OTHER_MOVES), this.position.col);
+        let p: Position = new Position(this.currentPosition.row + (this.getCardinality() * OTHER_MOVES), this.currentPosition.col);
         if(board.pieces[p.row][p.col] === undefined){
             forwardMoves.set(p.key(), p)
         }
                 
-        if (this.position.isEqual(this.initialPosition)){
-            let p = new Position(this.position.row + (this.getCardinality() * FIRST_MOVE), this.position.col);
+        if (this.currentPosition.isEqual(this.initialPosition)){
+            let p = new Position(this.currentPosition.row + (this.getCardinality() * FIRST_MOVE), this.currentPosition.col);
             if(board.pieces[p.row][p.col] === undefined && forwardMoves.size > 0){ // if there is a piece in front, we can't move 2 steps
                 forwardMoves.set(p.key(), p)
             }

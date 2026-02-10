@@ -9,10 +9,10 @@ import Rook from "../models/pieces/rook";
 
 function getSwappablePieces(pawnToSwap: Pawn): Piece[]{
     return [
-        new Queen(pawnToSwap.colour, pawnToSwap.position.row, pawnToSwap.position.col),
-        new Rook(pawnToSwap.colour, pawnToSwap.position.row, pawnToSwap.position.col),
-        new Bishop(pawnToSwap.colour, pawnToSwap.position.row, pawnToSwap.position.col),
-        new Knight(pawnToSwap.colour, pawnToSwap.position.row, pawnToSwap.position.col),
+        new Queen(pawnToSwap.colour, pawnToSwap.currentPosition.row, pawnToSwap.currentPosition.col),
+        new Rook(pawnToSwap.colour, pawnToSwap.currentPosition.row, pawnToSwap.currentPosition.col),
+        new Bishop(pawnToSwap.colour, pawnToSwap.currentPosition.row, pawnToSwap.currentPosition.col),
+        new Knight(pawnToSwap.colour, pawnToSwap.currentPosition.row, pawnToSwap.currentPosition.col),
     ];
 }
 

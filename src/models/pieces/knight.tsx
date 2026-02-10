@@ -25,7 +25,7 @@ class Knight extends Piece{
         ]
 
         directions.forEach(direction => {
-            const p = new Position(this.position.row + direction.row, this.position.col + direction.col);
+            const p = new Position(this.currentPosition.row + direction.row, this.currentPosition.col + direction.col);
             if(Utils.isLegalMove(p, board, this.colour)){
                 moves.set(p.key(), p);
             }

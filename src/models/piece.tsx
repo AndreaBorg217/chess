@@ -7,12 +7,14 @@ abstract class Piece {
     name: string;
     image: string;
     colour: Colour;
-    position: Position;
+    initialPosition: Position;
+    currentPosition: Position;
     
     constructor(name: string, colour: Colour, x: number, y: number) {
         this.name = name;
         this.colour = colour;
-        this.position = new Position(x, y);
+        this.initialPosition = new Position(x, y);
+        this.currentPosition = new Position(x, y);
         this.image = `/assets/images/pieces/${this.colour}/${this.name}.png`;
     }
 
@@ -23,11 +25,15 @@ abstract class Piece {
     
 
     public toString(): string {
-        return `${this.name}_${this.colour.charAt(0)}${this.position.toString()}`;
+        return `${this.name}_${this.colour.charAt(0)}${this.currentPosition.toString()}`;
     }
 
     public getOpponentColour(): Colour {
         return this.colour === Colour.WHITE ? Colour.BLACK : Colour.WHITE;
+    }
+
+    public hasMoved(): boolean {
+        return !this.currentPosition.isEqual(this.initialPosition);
     }
     
     abstract evaluateMoves(board: Board, history: Move[], log: boolean): Map<string, Position>;
