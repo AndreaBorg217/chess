@@ -1,12 +1,11 @@
 # Chess
 
-This is a fully functional chess game built using React. The project was developed from the ground up, focusing on implementing the game logic without relying on AI (just a good old-fashioned debugger). The game includes features such as move validation, piece-specific movement rules, and a user-friendly interface.
+This is a fully functional chess game built using React. The project was developed from the ground up, focusing on implementing the game logic without relying on AI; just me and a good old-fashioned debugger (Claude did help a bit with the CSS).
 
 ## Features
 
 - **Interactive Chessboard**: A user-friendly chessboard that updates based on user interactions.
-- **Game Logic**: Implements all chess rules, including most special moves like castling and pawn promotion. En passant is a TODO.
-- **Piece Movement**: Each piece has its own movement logic, encapsulated in reusable classes.
+- **Game Logic**: Implements all chess rules, including most special moves like castling, pawn promotion, and en passant.
 - **Stats Panel**: Displays game statistics, including the current turn, captured pieces, and game state.
 - **Pawn Promotion**: A modal allows players to select a piece when a pawn reaches the opposite end of the board.
 - **Responsive Design**: The UI is styled to work on different screen sizes.
