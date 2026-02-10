@@ -157,7 +157,7 @@ class GameController {
             if (this.selectedPiece === undefined) {
                 return;
             }
-            let possibleMoves: Map<string, Position> = this.selectedPiece.evaluateMoves(this.board, false);
+            let possibleMoves: Map<string, Position> = this.selectedPiece.evaluateMoves(this.board, this.history, false);
 
             // add castling moves
             if(this.selectedPiece instanceof King) {
@@ -174,8 +174,12 @@ class GameController {
             // move piece
             const oldPosition: Position = this.selectedPiece.position;
             console.log("Moved", this.selectedPiece.name,"from", this.selectedPiece.position.toString(), "to", clickedPosition.toString());
-            this.movePiece(oldPosition, clickedPosition);
             let move: Move = new Move(this.selectedPiece, oldPosition, clickedPosition);
+            // check if move is an en passant kill
+            if(this.handlePassantKill(oldPosition, clickedPosition, clickedCell)) {
+                move.enPassant = true;
+            }
+            this.movePiece(oldPosition, clickedPosition);
 
             // if move is a castling move, move rook over king
             if(this.isCastlingMove(oldPosition, clickedPosition)) {
@@ -196,6 +200,8 @@ class GameController {
 
                 move.castle = true;
             }
+
+            
             
             // check if pawn reached last row
             this.getSwappablePawn();
@@ -207,7 +213,6 @@ class GameController {
                 console.log("Pawn promoted, waiting for player to select piece");
                 return;
             }
-
 
             // check if piece was killed
             if (this.isPieceGettingKilled(clickedCell)) {
@@ -237,7 +242,7 @@ class GameController {
             this.selectedPiece = clickedCell;
             
             // get possible moves
-            let possibleMoves: Map<string, Position> = clickedCell.evaluateMoves(this.board, true);
+            let possibleMoves: Map<string, Position> = clickedCell.evaluateMoves(this.board, this.history, true);
 
             // add castling moves
             if(clickedCell instanceof King) {
@@ -272,7 +277,7 @@ class GameController {
         }
 
         // get king's possible moves
-        const kingPossibleMoves: Map<string, Position> = king.evaluateMoves(this.board, false);
+        const kingPossibleMoves: Map<string, Position> = king.evaluateMoves(this.board, this.history, false);
 
         // get kill moves for king's colour
         let kingPiecesCanKill: Map<string, Position> = new Map<string, Position>();
@@ -280,14 +285,14 @@ class GameController {
             for(let col = 0; col < COLUMNS; col++) {
                 if(this.board.pieces[row][col] instanceof Piece && this.board.pieces[row][col]?.colour === king.colour) {
                 const piece: Piece = this.board.pieces[row][col]!;
-                const moves: Map<string, Position> = piece.getKillMoves(this.board, false);
+                const moves: Map<string, Position> = piece.getKillMoves(this.board, this.history, false);
                 kingPiecesCanKill = new Map([...kingPiecesCanKill, ...moves]);
                 }
             }
         }
         
         // get possible moves for all opponent pieces
-        let opponentPossibleMoves = this.board.getOpponentKills(Utils.switchColour(king.colour));
+        let opponentPossibleMoves = this.board.getOpponentKills(Utils.switchColour(king.colour), this.history);
 
         // filter out opponent moves that king's pieces can kill
         for (let key of kingPiecesCanKill.keys()) {
@@ -362,7 +367,7 @@ class GameController {
 
         // check if king will pass through check
         // get possible moves for all opponent pieces
-        let opponentPossibleMoves = this.board.getOpponentKills(Utils.switchColour(king.colour));
+        let opponentPossibleMoves = this.board.getOpponentKills(Utils.switchColour(king.colour), this.history);
 
         const kingCastleMoves: Map<string, Position> = new Map<string, Position>();
         let p: Position = new Position(king.position.row, king.position.col + (moveDirection * 2));
@@ -397,6 +402,32 @@ class GameController {
         }
 
         return castleMoves;
+    }
+
+    private handlePassantKill(oldPosition: Position, clickedPosition: Position, clickedCell: Piece | undefined): boolean {
+        if (clickedCell !== undefined) {
+            return false;
+        }
+       
+        // Check for en passant capture
+        if (!(this.selectedPiece instanceof Pawn)) {
+            return false;
+        }
+        const pawn: Pawn = this.selectedPiece as Pawn;
+        const enPassantMove = pawn.GetEnPassantMove(this.board, this.history);
+        if (enPassantMove === undefined) {
+            return false;
+        }
+        // if the pawn has moved diagonally to an empty square, it must be an en passant capture
+
+        // determine location of opponent pawn and kill it
+        const opponentPawnRow = oldPosition.row;
+        const opponentPawnCol = clickedPosition.col;
+        const opponentPawn: Piece =  this.board.pieces[opponentPawnRow][opponentPawnCol] as Piece;
+        console.log("En passant capture! Killed", opponentPawn.toString());
+        this.board.pieces[opponentPawnRow][opponentPawnCol] = undefined;
+        this.deadPieces.get(opponentPawn.colour)?.push(opponentPawn);
+        return true;
     }
 
     public restartGame(): void {

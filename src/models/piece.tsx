@@ -1,10 +1,11 @@
 import { Colour } from '../enums/colour';
 import Position from './position'
 import Board from './board'
+import Move from './move';
 
 abstract class Piece {
     name: string;
-    image: string
+    image: string;
     colour: Colour;
     position: Position;
     
@@ -16,8 +17,8 @@ abstract class Piece {
     }
 
     // to handle Pawn diagonal moves
-    public getKillMoves(board: Board, log: boolean): Map<string, Position> {
-        return this.evaluateMoves(board, log);
+    public getKillMoves(board: Board, history: Move[], log: boolean): Map<string, Position> {
+        return this.evaluateMoves(board, history, log);
     }
     
 
@@ -29,7 +30,7 @@ abstract class Piece {
         return this.colour === Colour.WHITE ? Colour.BLACK : Colour.WHITE;
     }
     
-    abstract evaluateMoves(board: Board, log: boolean): Map<string, Position>;
+    abstract evaluateMoves(board: Board, history: Move[], log: boolean): Map<string, Position>;
 }
 
 export default Piece

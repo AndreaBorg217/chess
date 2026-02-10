@@ -3,13 +3,14 @@ import Position from "../position";
 import { Colour } from "../../enums/colour";
 import Board from "../board";
 import Utils from "../../utils/utils";
+import Move from "../move";
 
 class Knight extends Piece{
     constructor(colour: Colour, x: number, y: number){
         super("knight", colour, x, y);            
     }
     
-    public evaluateMoves(board: Board, log: boolean = true): Map<string, Position>{
+    public evaluateMoves(board: Board, history: Move[], log: boolean = true): Map<string, Position>{
         let moves: Map<string, Position> = new Map<string, Position>();
 
         const directions = [

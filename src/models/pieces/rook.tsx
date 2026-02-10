@@ -3,6 +3,7 @@ import Position from "../position";
 import { Colour } from "../../enums/colour";
 import Board from "../board";
 import MovementUtils from "../../utils/movement_utils";
+import Move from "../move";
 
 class Rook extends Piece{
     initialPosition: Position
@@ -12,7 +13,7 @@ class Rook extends Piece{
         this.initialPosition = new Position(x, y);            
     }
     
-    public evaluateMoves(board: Board, log: boolean = true): Map<string, Position>{
+    public evaluateMoves(board: Board, history: Move[], log: boolean = true): Map<string, Position>{
         const moves = MovementUtils.slidePlus(this, board);
         if(log){
             console.log("Rook can move to: ", Array.from(moves.values()).map(p => p.toString()).join(", "));

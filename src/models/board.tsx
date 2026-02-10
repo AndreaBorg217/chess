@@ -4,6 +4,7 @@ import { Colour } from "../enums/colour";
 import Rook from "./pieces/rook";
 import King from "./pieces/king";
 import Position from "./position";
+import Move from "./move";
 
 class Board{
 	pieces: (Piece | undefined)[][];
@@ -69,13 +70,13 @@ class Board{
         return rooks;
     }
 
-    public getOpponentKills(colour: Colour): Map<string, Position> {
+    public getOpponentKills(colour: Colour, history: Move[] = []): Map<string, Position> {
         let opponentPossibleMoves: Map<string, Position> = new Map<string, Position>();
         for(let row = 0; row < ROWS; row++) {
             for(let col = 0; col < COLUMNS; col++) {
                 if(this.pieces[row][col] instanceof Piece && this.pieces[row][col]?.colour === colour) {
                     const piece: Piece = this.pieces[row][col]!;
-                    const moves: Map<string, Position> = piece.getKillMoves(this, false);
+                    const moves: Map<string, Position> = piece.getKillMoves(this, history, false);
                     opponentPossibleMoves = new Map([...opponentPossibleMoves, ...moves]);
                 }
             }

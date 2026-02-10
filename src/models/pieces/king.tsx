@@ -3,6 +3,7 @@ import Position from "../position";
 import { Colour } from "../../enums/colour";
 import Utils from "../../utils/utils";
 import Board from "../board";
+import Move from "../move";
 
 class King extends Piece{
     initialPosition: Position
@@ -11,7 +12,7 @@ class King extends Piece{
         this.initialPosition = new Position(x, y);            
     }
     
-    public evaluateMoves(board: Board, log: boolean = true): Map<string, Position>{
+    public evaluateMoves(board: Board, history: Move[], log: boolean = true): Map<string, Position>{
         const moves: Map<string, Position> = new Map<string, Position>();
         const directions = [
             { row: 1, col: -1 },  // up left

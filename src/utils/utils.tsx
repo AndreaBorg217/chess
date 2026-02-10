@@ -6,7 +6,7 @@ import Position from '../models/position';
 
 class Utils{
 
-    public static isWithinBounds(p: Position): boolean {
+    public static isWithinBoard(p: Position): boolean {
         return p.row >= 0 && p.row < ROWS && p.col >= 0 && p.col < COLUMNS;
     }
 
@@ -15,7 +15,14 @@ class Utils{
     }
 
     public static isLegalMove(p: Position, board: Board, colour: Colour): boolean{
-        return Utils.isWithinBounds(p) &&(board.pieces[p.row][p.col] === undefined || board.pieces[p.row][p.col]?.colour !== colour)
+        if (!Utils.isWithinBoard(p)){
+            return false;
+        }
+        const targetCell = board.pieces[p.row][p.col];
+        if (targetCell === undefined){
+            return true;
+        }
+        return targetCell.colour !== colour;
     }
 }
 

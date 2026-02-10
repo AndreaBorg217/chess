@@ -8,6 +8,7 @@ class Move {
     kill: boolean = false;
     castle: boolean = false;
     pawnPromoted: boolean = false;
+    enPassant: boolean = false;
 
     constructor(piece: Piece, oldPosition: Position, newPosition: Position) {
         this.oldPosition = oldPosition;
