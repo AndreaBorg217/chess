@@ -43,6 +43,7 @@
     ]
   },
   "devDependencies": {
-    "@types/react": "^19.0.12"
+    "@types/react": "^19.0.12",
+    "prettier": "^3.8.1"
   }
 }

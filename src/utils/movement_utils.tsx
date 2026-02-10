@@ -2,9 +2,9 @@ import Piece from "../models/piece";
 import Position from "../models/position";
 import Board from "../models/board";
 
-class MovementUtils{
+class MovementUtils {
     // encapsulates common movement logic for Queen and Bishop
-    public static slideX(piece: Piece, board: Board): Map<string, Position>{
+    public static slideX(piece: Piece, board: Board): Map<string, Position> {
         // start from current position and move in X shape
         let moves: Map<string, Position> = new Map<string, Position>();
 
@@ -13,13 +13,19 @@ class MovementUtils{
         let col: number = piece.currentPosition.col - 1;
         while (row >= 0 && col >= 0) {
             // if opponent piece is found, add to moves, break
-            if (board.pieces[row][col] instanceof Piece && board.pieces[row][col]?.colour !== piece.colour) {
+            if (
+                board.pieces[row][col] instanceof Piece &&
+                board.pieces[row][col]?.colour !== piece.colour
+            ) {
                 let p: Position = new Position(row, col);
                 moves.set(p.key(), p);
                 break;
             }
             // if own piece is found, break
-            if (board.pieces[row][col] instanceof Piece && board.pieces[row][col]?.colour === piece.colour) {
+            if (
+                board.pieces[row][col] instanceof Piece &&
+                board.pieces[row][col]?.colour === piece.colour
+            ) {
                 break;
             }
             // if empty cell is found, add to moves
@@ -34,13 +40,19 @@ class MovementUtils{
         col = piece.currentPosition.col + 1;
         while (row >= 0 && col < 8) {
             // if opponent piece is found, add to moves, break
-            if (board.pieces[row][col] instanceof Piece && board.pieces[row][col]?.colour !== piece.colour) {
+            if (
+                board.pieces[row][col] instanceof Piece &&
+                board.pieces[row][col]?.colour !== piece.colour
+            ) {
                 let p: Position = new Position(row, col);
                 moves.set(p.key(), p);
                 break;
             }
             // if own piece is found, break
-            if (board.pieces[row][col] instanceof Piece && board.pieces[row][col]?.colour === piece.colour) {
+            if (
+                board.pieces[row][col] instanceof Piece &&
+                board.pieces[row][col]?.colour === piece.colour
+            ) {
                 break;
             }
             // if empty cell is found, add to moves
@@ -55,13 +67,19 @@ class MovementUtils{
         col = piece.currentPosition.col - 1;
         while (row < 8 && col >= 0) {
             // if opponent piece is found, add to moves, break
-            if (board.pieces[row][col] instanceof Piece && board.pieces[row][col]?.colour !== piece.colour) {
+            if (
+                board.pieces[row][col] instanceof Piece &&
+                board.pieces[row][col]?.colour !== piece.colour
+            ) {
                 let p: Position = new Position(row, col);
                 moves.set(p.key(), p);
                 break;
             }
             // if own piece is found, break
-            if (board.pieces[row][col] instanceof Piece && board.pieces[row][col]?.colour === piece.colour) {
+            if (
+                board.pieces[row][col] instanceof Piece &&
+                board.pieces[row][col]?.colour === piece.colour
+            ) {
                 break;
             }
             // if empty cell is found, add to moves
@@ -70,19 +88,25 @@ class MovementUtils{
             row++;
             col--;
         }
-        
+
         // increase current row, increase current col (right down from middle of board)
         row = piece.currentPosition.row + 1;
         col = piece.currentPosition.col + 1;
         while (row < 8 && col < 8) {
             // if opponent piece is found, add to moves, break
-            if (board.pieces[row][col] instanceof Piece && board.pieces[row][col]?.colour !== piece.colour) {
+            if (
+                board.pieces[row][col] instanceof Piece &&
+                board.pieces[row][col]?.colour !== piece.colour
+            ) {
                 let p: Position = new Position(row, col);
                 moves.set(p.key(), p);
                 break;
             }
             // if own piece is found, break
-            if (board.pieces[row][col] instanceof Piece && board.pieces[row][col]?.colour === piece.colour) {
+            if (
+                board.pieces[row][col] instanceof Piece &&
+                board.pieces[row][col]?.colour === piece.colour
+            ) {
                 break;
             }
             // if empty cell is found, add to moves
@@ -95,7 +119,7 @@ class MovementUtils{
     }
 
     // encapsulates common movement logic for Queen and Rook
-    public static slidePlus(piece: Piece, board: Board): Map<string, Position>{
+    public static slidePlus(piece: Piece, board: Board): Map<string, Position> {
         // move in plus shape starting from current position
         let moves = new Map<string, Position>();
 
@@ -103,13 +127,21 @@ class MovementUtils{
         let row: number = piece.currentPosition.row + 1;
         while (row < 8) {
             // if position is occupied by opponent, add to moves and break
-            if(board.pieces[row][piece.currentPosition.col] instanceof Piece && board.pieces[row][piece.currentPosition.col]?.colour !== piece.colour){
+            if (
+                board.pieces[row][piece.currentPosition.col] instanceof Piece &&
+                board.pieces[row][piece.currentPosition.col]?.colour !==
+                    piece.colour
+            ) {
                 let p: Position = new Position(row, piece.currentPosition.col);
-                moves.set(p.key(), p);   
+                moves.set(p.key(), p);
                 break;
             }
             // if position is occupied by self, break
-            if(board.pieces[row][piece.currentPosition.col] instanceof Piece && board.pieces[row][piece.currentPosition.col]?.colour === piece.colour){
+            if (
+                board.pieces[row][piece.currentPosition.col] instanceof Piece &&
+                board.pieces[row][piece.currentPosition.col]?.colour ===
+                    piece.colour
+            ) {
                 break;
             }
 
@@ -122,13 +154,21 @@ class MovementUtils{
         row = piece.currentPosition.row - 1;
         while (row >= 0) {
             // if position is occupied by opponent, add to moves and break
-            if(board.pieces[row][piece.currentPosition.col] instanceof Piece && board.pieces[row][piece.currentPosition.col]?.colour !== piece.colour){
+            if (
+                board.pieces[row][piece.currentPosition.col] instanceof Piece &&
+                board.pieces[row][piece.currentPosition.col]?.colour !==
+                    piece.colour
+            ) {
                 let p: Position = new Position(row, piece.currentPosition.col);
                 moves.set(p.key(), p);
                 break;
             }
             // if position is occupied by self, break
-            if(board.pieces[row][piece.currentPosition.col] instanceof Piece && board.pieces[row][piece.currentPosition.col]?.colour === piece.colour){
+            if (
+                board.pieces[row][piece.currentPosition.col] instanceof Piece &&
+                board.pieces[row][piece.currentPosition.col]?.colour ===
+                    piece.colour
+            ) {
                 break;
             }
 
@@ -141,13 +181,21 @@ class MovementUtils{
         let col: number = piece.currentPosition.col + 1;
         while (col < 8) {
             // if position is occupied by opponent, add to moves and break
-            if(board.pieces[piece.currentPosition.row][col] instanceof Piece && board.pieces[piece.currentPosition.row][col]?.colour !== piece.colour){
+            if (
+                board.pieces[piece.currentPosition.row][col] instanceof Piece &&
+                board.pieces[piece.currentPosition.row][col]?.colour !==
+                    piece.colour
+            ) {
                 let p: Position = new Position(piece.currentPosition.row, col);
                 moves.set(p.key(), p);
                 break;
             }
             // if position is occupied by self, break
-            if(board.pieces[piece.currentPosition.row][col] instanceof Piece && board.pieces[piece.currentPosition.row][col]?.colour === piece.colour){
+            if (
+                board.pieces[piece.currentPosition.row][col] instanceof Piece &&
+                board.pieces[piece.currentPosition.row][col]?.colour ===
+                    piece.colour
+            ) {
                 break;
             }
 
@@ -160,13 +208,21 @@ class MovementUtils{
         col = piece.currentPosition.col - 1;
         while (col >= 0) {
             // if position is occupied by opponent, add to moves and break
-            if(board.pieces[piece.currentPosition.row][col] instanceof Piece && board.pieces[piece.currentPosition.row][col]?.colour !== piece.colour){
+            if (
+                board.pieces[piece.currentPosition.row][col] instanceof Piece &&
+                board.pieces[piece.currentPosition.row][col]?.colour !==
+                    piece.colour
+            ) {
                 let p: Position = new Position(piece.currentPosition.row, col);
                 moves.set(p.key(), p);
                 break;
             }
             // if position is occupied by self, break
-            if(board.pieces[piece.currentPosition.row][col] instanceof Piece && board.pieces[piece.currentPosition.row][col]?.colour === piece.colour){
+            if (
+                board.pieces[piece.currentPosition.row][col] instanceof Piece &&
+                board.pieces[piece.currentPosition.row][col]?.colour ===
+                    piece.colour
+            ) {
                 break;
             }
 

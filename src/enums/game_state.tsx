@@ -1,4 +1,4 @@
-export enum GameState{
+export enum GameState {
     CHECK = "check",
     CHECKMATE = "checkmate",
     STALEMATE = "stalemate",

@@ -6,36 +6,57 @@ import Pawn from "../models/pieces/pawn";
 import Queen from "../models/pieces/queen";
 import Rook from "../models/pieces/rook";
 
-
-function getSwappablePieces(pawnToSwap: Pawn): Piece[]{
+function getSwappablePieces(pawnToSwap: Pawn): Piece[] {
     return [
-        new Queen(pawnToSwap.colour, pawnToSwap.currentPosition.row, pawnToSwap.currentPosition.col),
-        new Rook(pawnToSwap.colour, pawnToSwap.currentPosition.row, pawnToSwap.currentPosition.col),
-        new Bishop(pawnToSwap.colour, pawnToSwap.currentPosition.row, pawnToSwap.currentPosition.col),
-        new Knight(pawnToSwap.colour, pawnToSwap.currentPosition.row, pawnToSwap.currentPosition.col),
+        new Queen(
+            pawnToSwap.colour,
+            pawnToSwap.currentPosition.row,
+            pawnToSwap.currentPosition.col
+        ),
+        new Rook(
+            pawnToSwap.colour,
+            pawnToSwap.currentPosition.row,
+            pawnToSwap.currentPosition.col
+        ),
+        new Bishop(
+            pawnToSwap.colour,
+            pawnToSwap.currentPosition.row,
+            pawnToSwap.currentPosition.col
+        ),
+        new Knight(
+            pawnToSwap.colour,
+            pawnToSwap.currentPosition.row,
+            pawnToSwap.currentPosition.col
+        ),
     ];
 }
 
-export default function PawnSwapModal({ controller }: { controller: GameController }){
-    if(controller.swappablePawn === undefined){
+export default function PawnSwapModal({
+    controller,
+}: {
+    controller: GameController;
+}) {
+    if (controller.swappablePawn === undefined) {
         return null;
     }
-    return(
+    return (
         <div className="modal">
-        <div className="modal-content">
-          <h2>Choose a piece to swap your pawn with:</h2>
-          <div className="piece-selection">
-          {getSwappablePieces(controller.swappablePawn).map((piece: Piece) => (
-            <img 
-            key={piece.toString()} 
-            src={piece.image} 
-            alt={piece.name} 
-            className="swappable-piece" 
-            onClick={() => controller.handlePawnSwap(piece)}
-            />
-          ))}
-          </div>
-        </div>
+            <div className="modal-content">
+                <h2>Choose a piece to swap your pawn with:</h2>
+                <div className="piece-selection">
+                    {getSwappablePieces(controller.swappablePawn).map(
+                        (piece: Piece) => (
+                            <img
+                                key={piece.toString()}
+                                src={piece.image}
+                                alt={piece.name}
+                                className="swappable-piece"
+                                onClick={() => controller.handlePawnSwap(piece)}
+                            />
+                        )
+                    )}
+                </div>
+            </div>
         </div>
     );
 }

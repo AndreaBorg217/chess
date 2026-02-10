@@ -7,7 +7,6 @@ import Queen from "./models/pieces/queen";
 import King from "./models/pieces/king";
 import Pawn from "./models/pieces/pawn";
 
-
 export const ROWS: number = 8;
 export const COLUMNS: number = 8;
 
@@ -43,7 +42,7 @@ export const INITIAL_PIECES: Map<string, Piece> = new Map<string, Piece>([
     ["64", new Pawn(Colour.WHITE, 6, 4)],
     ["65", new Pawn(Colour.WHITE, 6, 5)],
     ["66", new Pawn(Colour.WHITE, 6, 6)],
-    ["67", new Pawn(Colour.WHITE,6, 7)],
+    ["67", new Pawn(Colour.WHITE, 6, 7)],
 ]);
 
 export const BOARD_GREEN: string = "#769656";

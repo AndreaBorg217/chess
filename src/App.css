@@ -1,192 +1,198 @@
 .App {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: #282c34;
-  height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #282c34;
+    height: 100vh;
 }
 
 .board {
-  height: 75vh;
+    height: 75vh;
 }
 
 .row {
-  display: flex;
+    display: flex;
 }
 
 .tile {
-  width: 6vw;
-  height: 6vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  border: 1px solid #808080;
+    width: 6vw;
+    height: 6vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: 1px solid #808080;
 }
 
 .piece {
-  width: 80%;
-  height: 80%;
+    width: 80%;
+    height: 80%;
 }
 
 #stats-container {
-  display: flex;
-  flex-direction: column;
-  padding-left: 8vw;
-  color: white;
-  gap: 2vh;
+    display: flex;
+    flex-direction: column;
+    padding-left: 8vw;
+    color: white;
+    gap: 2vh;
 }
 
 #turn-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1vw;
-  padding: 1vw;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 1vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1vw;
+    padding: 1vw;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 1vw;
 }
 
-#turn-piece, .dead-piece, .swappable-piece {
-  width: 3.5vw;
-  height: 3.5vw;
+#turn-piece,
+.dead-piece,
+.swappable-piece {
+    width: 3.5vw;
+    height: 3.5vw;
 }
 
 #state-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1vw;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 1vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1vw;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 1vw;
 }
 
 .colour-state-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1vw;
 }
 
 .colour-state-container img {
-  width: 3vw;
-  height: 3vw;
+    width: 3vw;
+    height: 3vw;
 }
 
-.colour-check-container, 
+.colour-check-container,
 .colour-checkmate-container,
 #stale-mate-container {
-  width: 6vw;
-  height: 6vw;
-  border: 1px solid white;
-  border-radius: 0.8vw;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 0.7vw;
-  font-weight: bold;
-  text-transform: uppercase;
-  position: relative;
+    width: 6vw;
+    height: 6vw;
+    border: 1px solid white;
+    border-radius: 0.8vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.7vw;
+    font-weight: bold;
+    text-transform: uppercase;
+    position: relative;
 }
 
 .colour-check-container::before {
-  content: "CHECK";
-  position: absolute;
+    content: "CHECK";
+    position: absolute;
 }
 
 .colour-checkmate-container::before {
-  content: "CHECKMATE";
-  position: absolute;
+    content: "CHECKMATE";
+    position: absolute;
 }
 
 #stale-mate-container::before {
-  content: "STALEMATE";
-  position: absolute;
+    content: "STALEMATE";
+    position: absolute;
 }
 
 #stale-mate-container {
-  margin: 0 2vw;
+    margin: 0 2vw;
 }
 
 #dead-container {
-  margin-top: 2vh;
-  padding: 1vw;
-  border-radius: 1vw;
-  background-color: rgba(255, 255, 255, 0.1);
+    margin-top: 2vh;
+    padding: 1vw;
+    border-radius: 1vw;
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-.dead-piece{
-  padding-top: 2vh;
+.dead-piece {
+    padding-top: 2vh;
 }
 
 .dead-pieces {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  gap: 1vw;
-  padding: 1vh;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 1vw;
+    padding: 1vh;
 }
 
 .colour-dead-pieces {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin: 1vh;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    margin: 1vh;
 }
 
 .modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.7);
-  z-index: 1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
 }
 
 .modal-content {
-  width: 40vw;
-  max-width: 40vw;
-  background-color: #333;
-  border-radius: 1.5vw;
-  padding: 3vh;
-  box-shadow: 0 2vh 10vh rgba(0, 0, 0, 0.5);
-  color: white;
-  text-align: center;
+    width: 40vw;
+    max-width: 40vw;
+    background-color: #333;
+    border-radius: 1.5vw;
+    padding: 3vh;
+    box-shadow: 0 2vh 10vh rgba(0, 0, 0, 0.5);
+    color: white;
+    text-align: center;
 }
 
 .piece-selection {
-  display: flex;
-  justify-content: center;
-  gap: 2vw;
-  margin-top: 2.5vh;
+    display: flex;
+    justify-content: center;
+    gap: 2vw;
+    margin-top: 2.5vh;
 }
 
-.swappable-piece, #restart-button {
-  width: 4.5vw;
-  height: 4.5vw;
-  cursor: pointer;
-  transition: transform 0.2s, filter 0.2s;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 0.8vw;
-  padding: 0.8vw;
+.swappable-piece,
+#restart-button {
+    width: 4.5vw;
+    height: 4.5vw;
+    cursor: pointer;
+    transition:
+        transform 0.2s,
+        filter 0.2s;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 0.8vw;
+    padding: 0.8vw;
 }
 
-.swappable-piece:hover, #restart-button:hover {
-  transform: scale(1.1);
-  filter: brightness(1.2);
+.swappable-piece:hover,
+#restart-button:hover {
+    transform: scale(1.1);
+    filter: brightness(1.2);
 }
 
 h2 {
-  margin-top: 0;
-  font-size: 3vh;
+    margin-top: 0;
+    font-size: 3vh;
 }
 
-#restart-button{
-  color: white;
-  font-size: 5vh;
-  border: none;
-  background-color: transparent;
+#restart-button {
+    color: white;
+    font-size: 5vh;
+    border: none;
+    background-color: transparent;
 }
