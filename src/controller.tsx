@@ -414,7 +414,7 @@ class GameController {
             return false;
         }
         const pawn: Pawn = this.selectedPiece as Pawn;
-        const enPassantMove = pawn.GetEnPassantMove(this.board, this.history);
+        const enPassantMove = pawn.getEnPassantMove(this.board, this.history);
         if (enPassantMove === undefined) {
             return false;
         }

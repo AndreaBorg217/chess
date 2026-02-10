@@ -12,7 +12,7 @@ class Pawn extends Piece{
         this.initialPosition = new Position(x, y);
     }
     
-    public GetEnPassantMove(board: Board, history: Move[], log: boolean=true): Position | undefined{
+    public getEnPassantMove(board: Board, history: Move[], log: boolean=true): Position | undefined{
         if (history.length === 0) {
             return undefined;
         }
@@ -69,7 +69,7 @@ class Pawn extends Piece{
             killMoves.set(rightDiagonal.key(), rightDiagonal);
         }
 
-        const enPassantMove = this.GetEnPassantMove(board, history);
+        const enPassantMove = this.getEnPassantMove(board, history);
         if(enPassantMove){
             killMoves.set(enPassantMove.key(), enPassantMove);
         }
