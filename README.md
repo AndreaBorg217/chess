@@ -29,7 +29,7 @@ The project is organized into the following key directories:
 
 ### The Board
 
-`Board` stores the pieces (or absence thereof) in a matrix, as well as the background colours of the cells and if they can be clicked. 
+`Board` stores the pieces (or absence thereof) in a matrix, as well as the background colours of the cells and if they can be clicked.
 
 A cell in `Board` can be of type `Piece` or `undefined`. `Piece` is an abstract class used to implement a common interface for moving logic. `evaluateMoves` is used to determine where a piece can move, including kills. This means that if a `Piece` moves to a cell containing another `Piece` of a different colour, it is identified as a kill.
 
@@ -43,12 +43,12 @@ A distinction is to be made between `clickedCell` and `clickedPostion` in the co
 
 Since the `Pawn` can only move in one direction, vertically towards the other side of the board, `getCardinality` uses the colour of the `Pawn` to determine this direction.
 
-
 ## Running the Solution
 
 To run the application locally, follow these steps:
 
 1. Ensure you have Docker installed on your machine.
 2. Run the following command to build and start the application:
-   ```bash
-   docker compose up --build -d
+    ```bash
+    docker compose up --build -d
+    ```

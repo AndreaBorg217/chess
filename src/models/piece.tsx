@@ -36,7 +36,7 @@ abstract class Piece {
     }
 
     public hasMoved(): boolean {
-        return !this.currentPosition.isEqual(this.initialPosition);
+        return !this.currentPosition.equal(this.initialPosition);
     }
 
     abstract evaluateMoves(

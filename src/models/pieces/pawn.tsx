@@ -135,7 +135,7 @@ class Pawn extends Piece {
             forwardMoves.set(p.key(), p);
         }
 
-        if (this.currentPosition.isEqual(this.initialPosition)) {
+        if (this.currentPosition.equal(this.initialPosition)) {
             let p = new Position(
                 this.currentPosition.row + this.getCardinality() * FIRST_MOVE,
                 this.currentPosition.col

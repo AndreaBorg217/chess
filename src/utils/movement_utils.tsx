@@ -1,6 +1,7 @@
 import Piece from "../models/piece";
 import Position from "../models/position";
 import Board from "../models/board";
+import {ROWS, COLUMNS} from "../constants"
 
 class MovementUtils {
     // encapsulates common movement logic for Queen and Bishop
@@ -38,7 +39,7 @@ class MovementUtils {
         // decrease current row, increase current col (right up from middle of board)
         row = piece.currentPosition.row - 1;
         col = piece.currentPosition.col + 1;
-        while (row >= 0 && col < 8) {
+        while (row >= 0 && col < COLUMNS) {
             // if opponent piece is found, add to moves, break
             if (
                 board.pieces[row][col] instanceof Piece &&
@@ -65,7 +66,7 @@ class MovementUtils {
         // increase current row, decrease current col (left down from middle of board)
         row = piece.currentPosition.row + 1;
         col = piece.currentPosition.col - 1;
-        while (row < 8 && col >= 0) {
+        while (row < ROWS && col >= 0) {
             // if opponent piece is found, add to moves, break
             if (
                 board.pieces[row][col] instanceof Piece &&
@@ -92,7 +93,7 @@ class MovementUtils {
         // increase current row, increase current col (right down from middle of board)
         row = piece.currentPosition.row + 1;
         col = piece.currentPosition.col + 1;
-        while (row < 8 && col < 8) {
+        while (row < ROWS && col < COLUMNS) {
             // if opponent piece is found, add to moves, break
             if (
                 board.pieces[row][col] instanceof Piece &&
@@ -125,7 +126,7 @@ class MovementUtils {
 
         // increase row (move up from centre of the board)
         let row: number = piece.currentPosition.row + 1;
-        while (row < 8) {
+        while (row < ROWS) {
             // if position is occupied by opponent, add to moves and break
             if (
                 board.pieces[row][piece.currentPosition.col] instanceof Piece &&
@@ -179,7 +180,7 @@ class MovementUtils {
         }
         // increase column (move right from centre of the board)
         let col: number = piece.currentPosition.col + 1;
-        while (col < 8) {
+        while (col < COLUMNS) {
             // if position is occupied by opponent, add to moves and break
             if (
                 board.pieces[piece.currentPosition.row][col] instanceof Piece &&
