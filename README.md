@@ -43,6 +43,8 @@ A distinction is to be made between `clickedCell` and `clickedPostion` in the co
 
 Since the `Pawn` can only move in one direction, vertically towards the other side of the board, `getCardinality` uses the colour of the `Pawn` to determine this direction.
 
+`Pawn` also implements the en passant move which in chess is allowed when the previous move was a two-square pawn advance by the opponent. The pawns start side by side (same column, 1 row difference) and we move the pawn to be behind (from the opponent's perspective) via a diagonal move to an empty square to capture the opponent's pawn we were adjacent to as illustrated by [chess.com](http://chess.com/terms/en-passant).
+
 ## Running the Solution
 
 To run the application locally, follow these steps:
